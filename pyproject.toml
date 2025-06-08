@@ -1,0 +1,20 @@
+[project]
+name = "vid2insight"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Sanjay Kumar",email = "trmpsanjay@gmail.com"},
+    {name = "Aditya Mukhopadhyay", email = "adityam@iisc.ac.in"},
+    {name= "Ankit Kumar", email = "ankitkumar18@iisc.ac.in"},
+    {name = "Danish Akhlaq", email = "danishakhlaq@iisc.ac.in"},
+    {name = "Trupti Rushikesh", email = "truptir@iisc.ac.in"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
