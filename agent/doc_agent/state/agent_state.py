@@ -5,11 +5,20 @@ from agent.doc_agent.state.input_state import InputState
 class AgentState(InputState):
     """Represents the  state for the agent."""
 
-    transcript: str = field(default="")
+
+    raw_transcript: str = field(default="")
 
     intent: str = field(default="")
 
-    frame_path: str = field(default="")
+    exec_summary: str = field(default="")
+
+    product_document: bool = field(default=False)
+
+    # user_messages: str = field(default="")
+    # """
+    # Latest user messages in the conversation.
+    # """
+
 
     answer: str = field(default="")
     """Final answer"""
