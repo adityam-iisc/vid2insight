@@ -33,3 +33,36 @@ class Routes(Enum):
             return cls[route_name.upper()]
         except KeyError:
             raise ValueError(f"Invalid route name: '{route_name}'. Available routes are: {', '.join(cls.__members__.keys())}.")
+
+
+class Intent(Enum):
+    """
+    Enumeration of the available intents for the agent.
+
+    Attributes:
+        GENERATE_EXEC_SUMMARY: Represents the intent to generate an executive summary.
+        GENERATE_DOCS: Represents the intent to generate product documents.
+        DOC_CHAT: Represents the intent for document chat interactions.
+    """
+    GENERATE_EXEC_SUMMARY = "generate_exec_summary"
+    GENERATE_DOCS = "generate_docs"
+    DOC_CHAT = "doc_chat"
+
+    @classmethod
+    def get_intent(cls, intent_name: str):
+        """
+        Retrieve the intent enum value based on the provided intent name.
+
+        Args:
+            intent_name (str): The name of the intent to retrieve.
+
+        Returns:
+            Intent: The corresponding intent enum value.
+
+        Raises:
+            ValueError: If the provided intent name is not valid.
+        """
+        try:
+            return cls[intent_name.upper()]
+        except KeyError:
+            raise ValueError(f"Invalid intent name: '{intent_name}'. Available intents are: {', '.join(cls.__members__.keys())}.")
