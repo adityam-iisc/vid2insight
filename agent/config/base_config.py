@@ -22,8 +22,8 @@ class BaseConfiguration:
         _fields = {f.name for f in fields(cls) if f.init}
         return cls(**{k: v for k, v in configurable.items() if k in _fields})
 
-    @classmethod    
-    def get_model(cls: Type[T],model: dict) -> BaseChatModel:
+    @classmethod
+    def get_model(cls: Type[T], model: dict) -> BaseChatModel:
         """Load a chat model from the specified dict.
         Args:
             dict(str,str): Dictionary with name and provider for the model'.
@@ -31,17 +31,21 @@ class BaseConfiguration:
         provider = model['provider']
         model_name = model['model_name']
         logger.info(f"Loading model {model['model_name']} from provider {provider}")
+
+        model_instance = None
         match provider:
             case "openai":
                 model_kwargs = {}
-                return init_chat_model(model_name, model_provider=provider, **model_kwargs)                
+                model_instance = init_chat_model(model_name, model_provider=provider, **model_kwargs)
             case "azure_openai":
-                model_kwargs = {"api_version":os.environ["AZURE_OPENAI_API_VERSION"]}
-                return init_chat_model(model_name, model_provider=provider, **model_kwargs)
+                model_kwargs = {"api_version": os.environ["AZURE_OPENAI_API_VERSION"]}
+                model_instance = init_chat_model(model_name, model_provider=provider, **model_kwargs)
             case "google_genai":
-                return init_chat_model(model_name, model_provider=provider)
+                model_instance = init_chat_model(model_name, model_provider=provider)
             case _:
                 raise ValueError(f"Unsupported: {provider}")
 
+        logger.info(f"Successfully loaded model: {model_name} from provider: {provider}")
+        return model_instance
 
 T = TypeVar("T", bound=BaseConfiguration)
