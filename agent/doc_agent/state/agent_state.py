@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
+
 from agent.doc_agent.state.input_state import InputState
+
 
 @dataclass(kw_only=True)
 class AgentState(InputState):
     """Represents the  state for the agent."""
-
 
     raw_transcript: str = field(default="")
 
@@ -19,12 +20,5 @@ class AgentState(InputState):
     # Latest user messages in the conversation.
     # """
 
-
     answer: str = field(default="")
     """Final answer"""
-
-
-
-
-
-

@@ -1,6 +1,8 @@
 import logging.config
 import os
+
 from ruamel.yaml import YAML
+
 
 def read_logger_config():
     yaml = YAML(typ='safe')
@@ -13,6 +15,7 @@ def read_logger_config():
         raise FileNotFoundError(f"Logger configuration file not found at {logger_config_path}")
     except Exception as e:
         raise RuntimeError(f"An error occurred while loading the logger configuration: {e}")
+
 
 # Define the logging configuration
 LOGGING_CONFIG = {
@@ -39,11 +42,12 @@ LOGGING_CONFIG = {
     },
 }
 
+
 def setup_logger():
     # logger_config = read_logger_config()
     # logging.config.dictConfig(logger_config)
     logging.config.dictConfig(LOGGING_CONFIG)
     return logging.getLogger('team-11')
 
-logger = setup_logger()
 
+logger = setup_logger()

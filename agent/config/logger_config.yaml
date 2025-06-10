@@ -13,15 +13,15 @@ handlers:
     class: logging.StreamHandler
     level: DEBUG
     formatter: simple
-    filters: [exclude_trace]
+    filters: [ exclude_trace ]
     stream: ext://sys.stdout
 
 loggers:
   zero-bytes-logger:
     level: DEBUG
-    handlers: [console]
+    handlers: [ console ]
     propagate: yes
 
 root:
   level: DEBUG
-  handlers: [console]
+  handlers: [ console ]

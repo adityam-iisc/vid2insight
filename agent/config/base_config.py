@@ -1,12 +1,16 @@
 from __future__ import annotations
-from dataclasses import dataclass,  fields
-from typing import Optional, Type, TypeVar
-from langchain_core.runnables import RunnableConfig, ensure_config
-from langchain_core.language_models import BaseChatModel
-from langchain.chat_models import init_chat_model
-from agent.config.initialize_logger import logger
-from dotenv import load_dotenv
+
 import os
+from dataclasses import dataclass, fields
+from typing import Optional, Type, TypeVar
+
+from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
+from langchain_core.language_models import BaseChatModel
+from langchain_core.runnables import RunnableConfig, ensure_config
+
+from agent.config.initialize_logger import logger
+
 load_dotenv()
 
 
@@ -15,7 +19,7 @@ class BaseConfiguration:
 
     @classmethod
     def from_runnable_config(
-        cls: Type[T], config: Optional[RunnableConfig] = None
+            cls: Type[T], config: Optional[RunnableConfig] = None
     ) -> T:
         config = ensure_config(config)
         configurable = config.get("configurable") or {}
@@ -47,5 +51,6 @@ class BaseConfiguration:
 
         logger.info(f"Successfully loaded model: {model_name} from provider: {provider}")
         return model_instance
+
 
 T = TypeVar("T", bound=BaseConfiguration)

@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Routes(Enum):
     """
     Enumeration of the available routes for the agent.
@@ -32,7 +33,8 @@ class Routes(Enum):
         try:
             return cls[route_name.upper()]
         except KeyError:
-            raise ValueError(f"Invalid route name: '{route_name}'. Available routes are: {', '.join(cls.__members__.keys())}.")
+            raise ValueError(
+                f"Invalid route name: '{route_name}'. Available routes are: {', '.join(cls.__members__.keys())}.")
 
 
 class Intent(Enum):
@@ -65,4 +67,5 @@ class Intent(Enum):
         try:
             return cls[intent_name.upper()]
         except KeyError:
-            raise ValueError(f"Invalid intent name: '{intent_name}'. Available intents are: {', '.join(cls.__members__.keys())}.")
+            raise ValueError(
+                f"Invalid intent name: '{intent_name}'. Available intents are: {', '.join(cls.__members__.keys())}.")

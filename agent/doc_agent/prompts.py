@@ -1,4 +1,3 @@
-from langchain.memory.prompt import SUMMARY_PROMPT
 SUMMARY_PROMPT = """
         System:    
         You are a highly accurate summarization agent. Your job is to read a long, automatically extracted “video context” (transcripts, scene descriptions, detected objects/actions, etc.) and produce a concise, faithful summary. You must follow these rules exactly:  
@@ -69,7 +68,6 @@ EXECUTIVE_SUMMARY_PROMPT = """
                 {context}    
                 </video_context>  
 """
-
 
 PRODUCT_DOCUMENT_PROMPTS = """
                 System:    
