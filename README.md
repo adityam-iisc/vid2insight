@@ -1,6 +1,6 @@
 # VID2Insights (Your Video to Insights Assistant)
 
-![Alt text](To be added)
+![Logo](agent/imgs/logo.png)
 
 A GPT/Gemini-based AI application with a Streamlit interface that transforms any video files into standard actionable
 insights. It also provides a simple chat interface to aid knowledge sharing.
