@@ -35,7 +35,7 @@ class FrameExtractor:
         self.max_frames_per_segment = max_frames_per_segment
         self.scene_detection_threshold = scene_detection_threshold
         if self.persist:
-            self.frame_path = os.getenv("FRAME_PATH", "../../docs/frames")
+            self.frame_path = os.getenv("FRAME_PATH", "../docs/frames")
             if not os.path.exists(self.frame_path):
                 os.makedirs(self.frame_path)
             else:

@@ -182,3 +182,20 @@ CHAT_SYSTEM_PROMPT = """
         {context}    
         </video_transcript>    
 """
+
+FRAME_EXTRACT_PROMPT = """
+System:
+You are a technical analyst. Analyze the following slide and generate:
+1. A detailed transcript of what a presenter would say while explaining the slide.
+2. A concise summary highlighting the key technical concepts.
+
+Slide content:
+{SLIDE_TEXT}
+
+(If present) Diagram description:
+{DIAGRAM_DESCRIPTION}
+
+(If present) Image description:
+{IMAGE_DESCRIPTION}
+
+"""
