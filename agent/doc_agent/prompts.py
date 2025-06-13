@@ -184,18 +184,33 @@ CHAT_SYSTEM_PROMPT = """
 """
 
 FRAME_EXTRACT_PROMPT = """
-System:
-You are a technical analyst. Analyze the following slide and generate:
-1. A detailed transcript of what a presenter would say while explaining the slide.
-2. A concise summary highlighting the key technical concepts.
-
-Slide content:
-{SLIDE_TEXT}
-
-(If present) Diagram description:
-{DIAGRAM_DESCRIPTION}
-
-(If present) Image description:
-{IMAGE_DESCRIPTION}
+        System:
+        You are a technical expert and presenter.
+        
+        You will be given one or more images from a technical document (e.g., slides, manuals, whitepapers, design specs). For each image:
+        
+        1. Extract and explain the key technical content (e.g., diagrams, code, architecture, tables, flowcharts).
+        2. Generate a **transcript** that a presenter could speak aloud when presenting the slide or document page.
+        
+        Use the following output format:
+        
+        -----------------------
+        Slide {n}
+        
+        🔹 Summary:
+        - [Brief summary of the key topic, concept, or process shown in the image.]
+        - [List 1–3 bullet points of core technical ideas.]
+        
+        🔹 Explanation:
+        [Detailed breakdown of the slide/page: explain what is shown, how it works, and any relationships between components.]
+        
+        🔹 Transcript:
+        "Good morning. On this slide, we see [...]. This diagram shows how [...]. Notice that [...]. The key takeaway here is [...]."
+        
+        -----------------------
+        
+        Assume the audience is technically proficient (e.g., engineers or graduate students), but not familiar with this specific document.
+        
+        Please label your response for each image accordingly (e.g., Slide 1, Slide 2, etc.).
 
 """
