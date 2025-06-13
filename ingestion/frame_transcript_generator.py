@@ -10,6 +10,8 @@ import cv2
 import base64
 from typing import Dict, List, Union
 from agent.doc_agent import prompts
+from ingestion.frame_json_parser import FrameJsonOutputParser
+
 
 def generate_frame_segment_transcript(path_to_frame_folder: str): #-> Dict[str, str]:
     """
@@ -28,6 +30,8 @@ def generate_frame_segment_transcript(path_to_frame_folder: str): #-> Dict[str, 
         else:
             logger.error(f"Directory {path_to_frame_folder} does not exist.")
             raise FileNotFoundError(f"Directory {path_to_frame_folder} does not exist.")
+
+        # LLM Configuration
         logger.info("---GENERATE FRAME TRANSCRIPT FOR INGESTION---")
         dict = read_frames_from_folder(path_to_frame_folder)
         llm_msg = request_llm(dict)
@@ -36,18 +40,29 @@ def generate_frame_segment_transcript(path_to_frame_folder: str): #-> Dict[str, 
         logger.info(configuration.default_llm_model['model_name'])
         chat_model = configuration.get_model(configuration.default_llm_model)
 
+        # Prepare prompts and messages
         messages = [
             HumanMessage(content=[
-                {"type": "text", "text": prompts.FRAME_EXTRACT_PROMPT},
+                {"type": "text", "text": prompts.FRAME_EXTRACT_PROMPT_2},
                 *llm_msg  # Add all images as content parts
             ])
         ]
+
+        # Generate the frame transcript
         frame_transcript = chat_model.invoke(messages)
-        logger.debug(f"Generated frame transcript: {frame_transcript.content}")
+        #logger.debug(f"Generated frame transcript: {frame_transcript.content}")
+
+        # Use the parser
+        parser = FrameJsonOutputParser()
+        parsed_output = parser.parse(frame_transcript.content)
+
+        # Access example
+        print(parsed_output[0]["summary"]["title"])
 
     except Exception as exc:
         logger.exception(f"Exception in creating transcription of frame segments: {exc}")
         raise
+
 def read_frames_from_folder(path_to_frame_folder) -> Dict[str, str]:
     directory = path_to_frame_folder
     img_base64_dict = {}
