@@ -117,7 +117,9 @@ class VideoAudioProcessor:
         try:
             op_path = self._extract_audio()
             audio = AudioSegment.from_file(op_path, format="wav")
+
             print("Output path", self.output_path)
+            os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
             if os.path.exists(self.output_path):
                 logger.info("Removing the output file after extraction {}", self.output_path)
                 print(self.output_path)
@@ -185,6 +187,7 @@ class VideoAudioProcessor:
 # convert video to audio and persist it in segments of duration interval_s
 # ===============================================
 if __name__ == "__main__":
+    video_id = "1234"
     aob = VideoAudioProcessor(
         # input_path='../../docs/abc.mp4',
         # output_path='../../docs/audio_output.wav',
@@ -192,7 +195,7 @@ if __name__ == "__main__":
         # input_path="C:\\Users\\rushik\\Documents\\tests\\video1.mp4",
         # output_path="C:\\Users\\rushik\\Documents\\tests\\audio_output.wav",
         input_path="C:\\Users\\rushik\\Documents\\tests\\video1.mp4",
-        output_path="../docs/audio_segments/audio_output.wav",
+        output_path=f"../docs/audio_segments/{video_id}/audio_output.wav",
         interval_s=15,
         persist=True
     )

@@ -48,7 +48,7 @@ class FrameExtractor:
                             logger.debug(f"Removing file {filename} from the frame directory.")
                             os.remove(file_path)
 
-    def extractor(self, mode: int = 1) -> tuple[List, List]:
+    def extractor(self, mode: int = 1, video_id) -> tuple[List, List]:
         """
         Extract frames using mode:
             1 - every nth frame,
@@ -231,7 +231,9 @@ class FrameExtractor:
             for frame_num, frame_base64 in selected_frames:
                 processed_segments_data.append(frame_base64)
                 if self.persist:
-                    frame_file = os.path.join(self.frame_path, f"segment_{segment_idx}_frame_{frame_num}.jpg")
+                    frame_folder = os.path.join(self.frame_path, f"{segment_idx:03d}")
+                    frame_file = os.path.join(frame_folder ,f"segment_{segment_idx}_frame_{frame_num}.jpg")
+                    os.makedirs(os.path.dirname(frame_file), exist_ok=True)
                     with open(frame_file, "wb") as f:
                         f.write(base64.b64decode(frame_base64))
                     frame_paths.append(frame_file)
@@ -239,13 +241,13 @@ class FrameExtractor:
         return processed_segments_data, frame_paths
 
 
-# if __name__ == "__main__":
-#     DUMMY_VIDEO_PATH = "C:\\Users\\rushik\\Documents\\tests\\video1.mp4"
-#     SEGMENT_DURATION_SECONDS = 15
-#     MAX_FRAMES_PER_SEGMENT_FOR_LLM = 10
-#     SCENE_DETECTION_THRESHOLD = 27.0
-#     extractor = FrameExtractor(video_path=DUMMY_VIDEO_PATH, persist=True,
-#                                segment_duration_seconds=SEGMENT_DURATION_SECONDS,
-#                                max_frames_per_segment=MAX_FRAMES_PER_SEGMENT_FOR_LLM,
-#                                scene_detection_threshold=SCENE_DETECTION_THRESHOLD)
-#     segments_data = extractor.extractor(mode=2)
+if __name__ == "__main__":
+    DUMMY_VIDEO_PATH = "C:\\Users\\rushik\\Documents\\tests\\video1.mp4"
+    SEGMENT_DURATION_SECONDS = 15
+    MAX_FRAMES_PER_SEGMENT_FOR_LLM = 10
+    SCENE_DETECTION_THRESHOLD = 27.0
+    extractor = FrameExtractor(video_path=DUMMY_VIDEO_PATH, persist=True,
+                               segment_duration_seconds=SEGMENT_DURATION_SECONDS,
+                               max_frames_per_segment=MAX_FRAMES_PER_SEGMENT_FOR_LLM,
+                               scene_detection_threshold=SCENE_DETECTION_THRESHOLD)
+    segments_data = extractor.extractor(mode=2)
