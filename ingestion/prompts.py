@@ -121,3 +121,63 @@ AUDIO_EXTRACT_PROMPT_2 = """
     }
 
 """
+
+COMBINED_EXTRACT_PROMPT = """
+System:
+You will receive multiple groups of multimodal content.
+
+Each group contains:
+- One audio segment (which may contain one or more speakers)
+- One or more images from a technical document (e.g., slides, manuals, whitepapers, or design specs)
+
+Your task is to process **each group independently** and return structured output for every group in the JSON format below.
+
+For each group:
+
+1. Accurately **transcribe the audio**. If multiple speakers are present, reflect changes in speakers where possible, using labels like "Speaker 1", "Speaker 2", etc. If unclear, use "Unknown".
+
+2. For each image in the group:
+    - Extract and return the **visible text** exactly as it appears (`raw_text`)
+    - Describe the **content of the image** in natural language
+    - Provide a **summary** with:
+      - A short `title`
+      - A few high-level bullet points (`bullet_points`)
+    - Write an **explanation** of diagrams, charts, or technical content in the image
+    - Generate a **natural-sounding transcript** as if a presenter is explaining the image to a technical audience
+
+3. Then, generate a **combined transcript** that integrates the audio and the image content — as if a single presenter is delivering both parts cohesively in a live technical presentation.
+
+**Return your response in the following JSON structure** (per group):
+
+```json
+[
+  {
+    "audio_transcript": "Verbatim transcript of the audio segment with speaker attribution if available.",
+    "image_transcript": [
+      {
+        "image_nbr": 1,
+        "content_of_image": "Summary of what's shown in the image.",
+        "raw_text": "All visible text exactly as it appears in the image.",
+        "summary": {
+          "title": "One-line summary of the image topic.",
+          "bullet_points": [
+            "Key technical point 1",
+            "Key technical point 2",
+            "Key technical point 3"
+          ]
+        },
+        "explanation": "Detailed explanation of diagrams, code, or visual content in the image.",
+        "transcript": "Spoken-style transcript explaining the image as if in a talk."
+      },
+      {
+        "image_nbr": 2,
+        "content_of_image": "...",
+        ...
+      }
+    ],
+    "combined_transcript": "Single, smooth transcript that blends the audio content and image explanations into one cohesive spoken narrative."
+  },
+  ...
+]
+
+"""

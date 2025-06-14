@@ -121,8 +121,7 @@ class VideoAudioProcessor:
             print("Output path", self.output_path)
             os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
             if os.path.exists(self.output_path):
-                logger.info("Removing the output file after extraction {}", self.output_path)
-                print(self.output_path)
+
                 os.remove(self.output_path)
             if self.interval_s:
                 if self.persist:
@@ -195,7 +194,7 @@ if __name__ == "__main__":
         # input_path="C:\\Users\\rushik\\Documents\\tests\\video1.mp4",
         # output_path="C:\\Users\\rushik\\Documents\\tests\\audio_output.wav",
         input_path="C:\\Users\\rushik\\Documents\\tests\\video1.mp4",
-        output_path=f"../docs/audio_segments/{video_id}/audio_output.wav",
+        output_path=f"../docs/{video_id}/audio_segments/audio_output.wav",
         interval_s=15,
         persist=True
     )

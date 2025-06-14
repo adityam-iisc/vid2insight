@@ -35,7 +35,7 @@ class FrameExtractor:
         self.max_frames_per_segment = max_frames_per_segment
         self.scene_detection_threshold = scene_detection_threshold
         if self.persist:
-            self.frame_path = os.getenv("FRAME_PATH", "../docs/frames")
+            self.frame_path = os.getenv("FRAME_PATH", "../docs")
             if not os.path.exists(self.frame_path):
                 os.makedirs(self.frame_path)
             else:
@@ -48,7 +48,7 @@ class FrameExtractor:
                             logger.debug(f"Removing file {filename} from the frame directory.")
                             os.remove(file_path)
 
-    def extractor(self, mode: int = 1, video_id) -> tuple[List, List]:
+    def extractor(self, video_id,mode: int = 1) -> tuple[List, List]:
         """
         Extract frames using mode:
             1 - every nth frame,
@@ -69,7 +69,7 @@ class FrameExtractor:
                 return self.extraction_of_nth_frame(video)
             elif mode == 2:
                 logger.debug("Extracting unique frames from the video using segmentation.")
-                return self.get_segmented_frames(video)
+                return self.get_segmented_frames(video,video_id)
             return [], []
 
         except Exception as e:
@@ -132,7 +132,7 @@ class FrameExtractor:
             return base64_encoded, hash_val
         return None, None
 
-    def get_segmented_frames(self, video: cv2.VideoCapture) -> tuple[List, List]:
+    def get_segmented_frames(self, video: cv2.VideoCapture,video_id) -> tuple[List, List]:
         """
         Processes the video in fixed-duration segments, performs scene detection,
         and extracts representative frames ensuring unique frames even across sampling strategies.
@@ -231,7 +231,7 @@ class FrameExtractor:
             for frame_num, frame_base64 in selected_frames:
                 processed_segments_data.append(frame_base64)
                 if self.persist:
-                    frame_folder = os.path.join(self.frame_path, f"{segment_idx:03d}")
+                    frame_folder = os.path.join(self.frame_path,f"{video_id}","frames" ,f"{segment_idx:03d}")
                     frame_file = os.path.join(frame_folder ,f"segment_{segment_idx}_frame_{frame_num}.jpg")
                     os.makedirs(os.path.dirname(frame_file), exist_ok=True)
                     with open(frame_file, "wb") as f:
@@ -250,4 +250,5 @@ if __name__ == "__main__":
                                segment_duration_seconds=SEGMENT_DURATION_SECONDS,
                                max_frames_per_segment=MAX_FRAMES_PER_SEGMENT_FOR_LLM,
                                scene_detection_threshold=SCENE_DETECTION_THRESHOLD)
-    segments_data = extractor.extractor(mode=2)
+    video_id = "1234"
+    segments_data = extractor.extractor(video_id,mode=2)
