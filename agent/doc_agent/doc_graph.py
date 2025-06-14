@@ -1,5 +1,7 @@
 import asyncio
+from pprint import pprint
 
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import StateGraph, START, END
 
 from agent.config.assistant_config import AssistantConfiguration
@@ -19,36 +21,57 @@ graph.add_node(constants.Routes.PRODUCT_DOCUMENTS.value, nodes.generate_product_
 
 graph.add_node(constants.Routes.DOC_CHAT.value, nodes.chat)
 
+graph.add_node(constants.Routes.EVALUATOR.value, nodes.evaluate)
+
 graph.add_edge(START, constants.Routes.CONTEXT.value)
 graph.add_conditional_edges(constants.Routes.CONTEXT.value, nodes.decide_intent,
                             {
                                 constants.Intent.GENERATE_EXEC_SUMMARY.value: constants.Routes.EXECUTIVE_SUMMARY.value,
                                 constants.Intent.GENERATE_DOCS.value: constants.Routes.PRODUCT_DOCUMENTS.value,
-                                constants.Intent.DOC_CHAT.value: constants.Routes.DOC_CHAT.value,
+                                constants.Intent.DOC_CHAT.value: constants.Routes.DOC_CHAT.value
                             }
                             )
 
-graph.add_edge(constants.Routes.EXECUTIVE_SUMMARY.value, END)
-graph.add_edge(constants.Routes.PRODUCT_DOCUMENTS.value, END)
+
+graph.add_edge(constants.Routes.EXECUTIVE_SUMMARY.value, constants.Routes.EVALUATOR.value)
+graph.add_edge(constants.Routes.PRODUCT_DOCUMENTS.value, constants.Routes.EVALUATOR.value)
+
+graph.add_conditional_edges(
+    constants.Routes.EVALUATOR.value,
+    nodes.decide_modification,
+    {
+        constants.Intent.GENERATE_EXEC_SUMMARY.value: constants.Routes.EXECUTIVE_SUMMARY.value,
+        constants.Intent.GENERATE_DOCS.value: constants.Routes.PRODUCT_DOCUMENTS.value,
+        'end': END
+    }
+)
 graph.add_edge(constants.Routes.DOC_CHAT.value, END)
-app = graph.compile()
+checkpointer = InMemorySaver()
+app = graph.compile(checkpointer=checkpointer)
 app.name = "doc_agent"
 
 
 # png_path="/Users/kumarsa2/Desktop/Personal/vid2insight/agent/doc_agent/imgs/"
-# app.get_graph().draw_mermaid_png(output_file_path=png_path+app.name+".png")
+# app.get_graph().draw_mermaid_png(output_file_path=png_path+app.name+"_test.png")
 async def main():
-    config = {"configurable": {"thread_id": "1", "user_id": "kumarsa2", 'intent': 'generate_exec_summary',
-                               'file_path': '/Users/kumarsa2/Downloads/abc.mp4'}}
-    input = {"messages": [{"role": "human", "content": "tell me about the video"}]}
+
+
 
     try:
-        res = await app.ainvoke(input, config)
-        print('---------OUTPUT---------------\n')
-        print(res)
+       while True:
+           #generate_exec_summary
+           intent = input("Enter intent (generate_exec_summary, generate_docs, doc_chat) or 'exit' to quit: ")
+           message = input("Enter message: ")
+           config = {"configurable": {"thread_id": "1", "user_id": "kumarsa2", 'intent': intent,
+                                      'file_path': '/Users/kumarsa2/Downloads/abc.mp4'}}
 
-        print('---------OUTPUT---------------\n')
-        print(res['answer'])
+           payload = {"messages": [{"role": "human", "content": message}]}
+           res = await app.ainvoke(payload, config)
+           print('---------OUTPUT---------------\n')
+           print(res['answer'])
+
+           print('---------OUTPUT---------------\n')
+           print(res['answer'].content)
     except Exception as e:
         logger.error("An error occurred while invoking ainvoke:", exc_info=True)
 
