@@ -1,0 +1,75 @@
+Registering a Device with Smart Licensing Using Policy: On-Prem Workflow
+
+Introduction & Requirements
+
+- The process begins with an overview slide titled "Register Device with Smart Licensing Using Policy: On-Prem Workflow" and the Cisco logo.
+- Software version requirements for Smart Licensing Using Policy are listed to ensure compatibility.
+
+Logging into Cisco SSM On-Prem
+
+- Access the On-Prem Account Workspace login screen.
+- Enter admin credentials; a "Forgot Password" link is available if needed.
+- Click the "Log In" button to access the On-Prem Admin Workspace.
+
+Navigating the SSM On-Prem Dashboard
+
+- The main dashboard displays navigation menus and a system health panel.
+- Navigate to the "Access Management" section for further configuration.
+
+
+Device CLI: Checking Software Version
+
+- Open a terminal window on the Cisco ISR4k device.
+- Run the command show version to display IOS XE version, licensing, and uptime information.
+
+Device CLI: Connectivity Testing
+
+- Use the ping command to test connectivity to the On-Prem server IP; confirm 100% success.
+- Use the telnet command to verify access to the On-Prem server, with the server IP highlighted for reference.
+
+Device CLI: Entering Configuration Mode
+
+- Enter global configuration mode with conf t.
+- Begin entering licensing-related commands.
+- Set the transport method with license smart transport cslu.
+
+SSM On-Prem: Managing Registration Tokens
+
+- In the SSM On-Prem web interface, navigate to the "Smart Licensing" section and select the "General" tab for the default local virtual account.
+- Click the "New Token..." button to generate a new registration token.
+- Copy the Product Registration URL from the modal window.
+
+Device CLI: Configuring Smart Licensing URL
+
+- In the CLI, enter license smart url cslu and paste the copied Product Registration URL.
+
+Device CLI: PKI Trustpoint Configuration
+
+- Enter configuration mode and configure a PKI trustpoint named SLA-TrustPoint.
+- Set revocation-check to none for the trustpoint.
+
+Device CLI: VRF and HTTP Client Source Interface
+
+- Check VRF configuration with show vrf.
+- Enter configuration mode and configure the HTTP client source interface using ip http client source-interface, especially important in VRF environments.
+
+Device CLI: Licensing Command Initiation
+
+- Prepare to enter the licensing command to initiate device registration.
+
+SSM On-Prem: Monitoring Alerts and Product Instances
+
+- In the SSM On-Prem dashboard, access the "Alerts" tab to view minor alerts related to CSSM communication.
+- Open the "Product Instances" tab to view registered devices, including device types, last contact times, and alert statuses.
+- Newly registered routers are highlighted in the product instances table.
+
+Transitions & Closing
+
+- A loading animation indicates processing.
+- The workflow concludes with the Cisco logo and the tagline "The bridge to possible."
+
+Summary
+
+- This workflow demonstrates registering a Cisco device with Smart Licensing Using Policy in an on-premises environment.
+- Steps include logging into SSM On-Prem, managing accounts and registration tokens, configuring the device via CLI (including connectivity tests, licensing, and trustpoint setup), and verifying successful registration and alerts in the SSM On-Prem dashboard.
+- The process is introduced and concluded with Cisco-branded slides.
