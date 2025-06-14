@@ -177,15 +177,18 @@ class VideoAudioProcessor:
 # ===============================================
 # convert video to audio and persist it in segments of duration interval_s
 # ===============================================
-# if __name__ == "__main__":
-    # aob = VideoAudioProcessor(
-    #     # input_path='../../docs/abc.mp4',
-    #     # output_path='../../docs/audio_output.wav',
-    #     input_path="C:\\Users\\rushik\\Documents\\tests\\video1.mp4",
-    #     output_path="C:\\Users\\rushik\\Documents\\tests\\audio_output.wav",
-    #     interval_s=15,
-    #     persist=True
-    # )
-    # chunks = aob.extractor()
-#     print(chunks)
+if __name__ == "__main__":
+    aob = VideoAudioProcessor(
+        # input_path='../../docs/abc.mp4',
+        # output_path='../../docs/audio_output.wav',
+        # ==== valid ====
+        # input_path="C:\\Users\\rushik\\Documents\\tests\\video1.mp4",
+        # output_path="C:\\Users\\rushik\\Documents\\tests\\audio_output.wav",
+        input_path="C:\\Users\\rushik\\Documents\\tests\\video1.mp4",
+        output_path="../docs/audio_segments/audio_output.wav",
+        interval_s=15,
+        persist=True
+    )
+    chunks = aob.extractor()
+    # print(chunks)
     # audio_transcript(chunks)
