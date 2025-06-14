@@ -46,7 +46,7 @@ def generate_frame_segment_transcript(path_to_frame_folder: str) -> list[dict]:
         logger.info(configuration.default_llm_model['provider'])
         logger.info(configuration.default_llm_model['model_name'])
         chat_model = configuration.get_model(configuration.default_llm_model)
-        llm_requests(chat_model)
+        llm_requests(chat_model, path_to_frame_folder)
     except Exception as exc:
         logger.exception(f"Exception in creating transcription of frame segments: {exc}")
         raise
@@ -63,7 +63,7 @@ def read_frames_from_folder(path_to_frame_folder) -> Dict[str, str]:
             img_base64_dict[f"{entry.name}"] = f"{convert}"
     return img_base64_dict
 
-def llm_requests(chat_model):
+def llm_requests(chat_model, path_to_frame_folder):
     """
     Create a list of LLM requests from the base64 encoded images.
 
@@ -77,7 +77,7 @@ def llm_requests(chat_model):
         len(json.dumps(req_parts).encode("utf-8")))
 
     # Read frames from the folder and convert to base64
-    base64_img = read_frames_from_folder("../docs/frames")
+    base64_img = read_frames_from_folder(path_to_frame_folder) #"../docs/frames"
 
     # Create LLM requests from the base64 images
     img_list = get_img_content_list(base64_img)

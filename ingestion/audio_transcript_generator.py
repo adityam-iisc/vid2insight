@@ -50,6 +50,7 @@ def generate_audio_segment_transcript(path_to_frame_folder: str) -> list[dict]:
     except Exception as exc:
         logger.exception(f"Exception in creating transcription of frame segments: {exc}")
         raise
+
 def read_audio_segs_from_folder(path_to_frame_folder) -> Dict[str, str]:
     directory = path_to_frame_folder
     audio_base64_dict = {}
@@ -112,8 +113,6 @@ def llm_requests(chat_model, path_to_frame_folder: str) -> List[Dict[str, str]]:
             # print(req_op)
             req_output_list.append(req_op)
         logger.info("Request parts sent to LLM")
-
-
     return req_output_list
 
 

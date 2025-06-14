@@ -82,6 +82,7 @@ class VideoAudioProcessor:
                 f"{base}_%03d{ext}"
             ]
             self._run_ffmpeg_command(cmd2)
+
         else:
             cmd = [
                 self.ffmpeg_path,
@@ -116,6 +117,11 @@ class VideoAudioProcessor:
         try:
             op_path = self._extract_audio()
             audio = AudioSegment.from_file(op_path, format="wav")
+            print("Output path", self.output_path)
+            if os.path.exists(self.output_path):
+                logger.info("Removing the output file after extraction {}", self.output_path)
+                print(self.output_path)
+                os.remove(self.output_path)
             if self.interval_s:
                 if self.persist:
                     # If persist is True, we will create multiple files
@@ -134,6 +140,7 @@ class VideoAudioProcessor:
                     chunk_bytes_list.append(chunk_io)
             else:
                 chunk_bytes_list = [audio.export(format="wav")]
+
             return chunk_bytes_list
         except Exception as e:
             self.logger.error(f"Error extracting audio: {e}")
