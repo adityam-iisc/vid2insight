@@ -76,7 +76,7 @@ def llm_requests(chat_model, path_to_frame_folder):
     """
     req_output_list = []
 
-    req_parts = [{"type": "text", "text": prompts.FRAME_EXTRACT_PROMPT_2} ]
+    req_parts = [{"type": "text", "text": prompts.FRAME_EXTRACT_PROMPT}]
     current_payload_size = (
         len(json.dumps(req_parts).encode("utf-8")))
 
@@ -86,7 +86,7 @@ def llm_requests(chat_model, path_to_frame_folder):
     # Create LLM requests from the base64 images
     img_list, img_path_list = get_img_content_list(base64_img)
 
-    is_llm_call_pending = True
+    is_llm_call_pending = False
     for img, img_name in zip(img_list, base64_img.keys()):
         path = img_name
         projected_size = current_payload_size + len(json.dumps(img).encode("utf-8"))
@@ -100,7 +100,7 @@ def llm_requests(chat_model, path_to_frame_folder):
 
             # Reset the request parts and add the new image
             logger.info("Resetting request parts for the next batch.")
-            req_parts = {"type": "text", "text": prompts.FRAME_EXTRACT_PROMPT_2}
+            req_parts = {"type": "text", "text": prompts.FRAME_EXTRACT_PROMPT}
             current_payload_size = (
                 len(json.dumps(req_parts).encode("utf-8")))
             break
@@ -139,9 +139,6 @@ def get_llm_response(req_parts: List[Dict[str, str]], chat_model: BaseChatModel)
 
     parsed_output = parser.parse(frame_transcript.content)
 
-    # Access example
-    # logger.info("Parsed Output: ", parsed_output)
-    #logger.info("Summary Title: " ,parsed_output[0]["summary"]["title"])
     return parsed_output
 
 
@@ -160,8 +157,9 @@ def get_img_content_list(base64_img : Dict[str,str]):
         img_path_list.append(key)
     return img_list, img_path_list
 
-if __name__ == "__main__":
-    # TODO: Update hardcoded path_to_frame_folder
-    video_id = "1234"
-    path_to_frame_folder = f"../docs/{video_id}/frames"
-    generate_frame_segment_transcript(path_to_frame_folder)
+# ============ Test Code ===============
+# if __name__ == "__main__":
+#     # TODO: Update hardcoded path_to_frame_folder
+#     video_id = "1234"
+#     path_to_frame_folder = f"../docs/{video_id}/frames"
+#     generate_frame_segment_transcript(path_to_frame_folder)

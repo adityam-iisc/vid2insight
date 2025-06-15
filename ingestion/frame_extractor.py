@@ -240,15 +240,15 @@ class FrameExtractor:
 
         return processed_segments_data, frame_paths
 
-
-if __name__ == "__main__":
-    DUMMY_VIDEO_PATH = "C:\\Users\\rushik\\Documents\\tests\\video1.mp4"
-    SEGMENT_DURATION_SECONDS = 15
-    MAX_FRAMES_PER_SEGMENT_FOR_LLM = 10
-    SCENE_DETECTION_THRESHOLD = 27.0
-    extractor = FrameExtractor(video_path=DUMMY_VIDEO_PATH, persist=True,
-                               segment_duration_seconds=SEGMENT_DURATION_SECONDS,
-                               max_frames_per_segment=MAX_FRAMES_PER_SEGMENT_FOR_LLM,
-                               scene_detection_threshold=SCENE_DETECTION_THRESHOLD)
-    video_id = "1234"
-    segments_data = extractor.extractor(video_id,mode=2)
+# ===== TEST CODE =====
+# if __name__ == "__main__":
+#     DUMMY_VIDEO_PATH = "C:\\Users\\rushik\\Documents\\tests\\video1.mp4"
+#     SEGMENT_DURATION_SECONDS = 15
+#     MAX_FRAMES_PER_SEGMENT_FOR_LLM = 10
+#     SCENE_DETECTION_THRESHOLD = 27.0
+#     extractor = FrameExtractor(video_path=DUMMY_VIDEO_PATH, persist=True,
+#                                segment_duration_seconds=SEGMENT_DURATION_SECONDS,
+#                                max_frames_per_segment=MAX_FRAMES_PER_SEGMENT_FOR_LLM,
+#                                scene_detection_threshold=SCENE_DETECTION_THRESHOLD)
+#     video_id = "1234"
+#     segments_data = extractor.extractor(video_id,mode=2)

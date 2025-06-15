@@ -73,7 +73,7 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
     """
     req_output_list = []
 
-    req_parts = [{"type": "text", "text": prompts.AUDIO_EXTRACT_PROMPT_2} ]
+    req_parts = [{"type": "text", "text": prompts.AUDIO_EXTRACT_PROMPT}]
     current_payload_size = (
         len(json.dumps(req_parts).encode("utf-8")))
 
@@ -83,7 +83,7 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
     # Create LLM requests from the base64 images
     img_list = get_audio_content_list(base64_img)
 
-    is_llm_call_pending = True
+    is_llm_call_pending = False
     for img, img_name in zip(img_list, base64_img.keys()):
         path = img_name
         projected_size = current_payload_size + len(json.dumps(img).encode("utf-8"))
@@ -97,7 +97,7 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
 
             # Reset the request parts and add the new image
             logger.info("Resetting request parts for the next batch.")
-            req_parts = {"type": "text", "text": prompts.AUDIO_EXTRACT_PROMPT_2}
+            req_parts = {"type": "text", "text": prompts.AUDIO_EXTRACT_PROMPT}
             current_payload_size = (
                 len(json.dumps(req_parts).encode("utf-8")))
             break
@@ -114,7 +114,6 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
             # print(req_op)
             req_output_list.append(req_op)
         logger.info("Request parts sent to LLM")
-    x=req_output_list
     return req_output_list
 
 
@@ -128,16 +127,10 @@ def get_llm_response(req_parts: List[Dict[str, str]], chat_model: BaseChatModel)
     ]
     # Generate the frame transcript
     audio_transcript = chat_model.invoke(messages)
-    # logger.debug(f"Generated audio transcript: {audio_transcript.content}")
-    # print(f"Generated audio transcript: {audio_transcript.content}")
-    # Use the parser
+
+    # Parse it and return it
     parser = FrameJsonOutputParser()
-
     parsed_output = parser.parse(audio_transcript.content)
-
-    # Access example
-    # logger.info("Parsed Output: ", parsed_output)
-    #logger.info("Summary Title: " ,parsed_output[0]["summary"]["title"])
     return parsed_output
 
 
@@ -154,8 +147,9 @@ def get_audio_content_list(base64_audio : Dict[str,str]):
         )
     return img_list
 
-if __name__ == "__main__":
-    # TODO: Update hardcoded path_to_folder
-    video_id = "1234"
-    path_to_folder = f"../docs/{video_id}/audio_segments"
-    generate_audio_segment_transcript(path_to_folder)
+# ============ Test Code ===============
+# if __name__ == "__main__":
+#     # TODO: Update hardcoded path_to_folder
+#     video_id = "1234"
+#     path_to_folder = f"../docs/{video_id}/audio_segments"
+#     generate_audio_segment_transcript(path_to_folder)

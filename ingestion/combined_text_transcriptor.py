@@ -1,4 +1,5 @@
 import json
+import shutil
 
 import cv2
 from langchain_core.language_models import BaseChatModel
@@ -37,16 +38,16 @@ def generate_transcript(video_path: str, path_to_folder: str, video_id: str) -> 
 
     try:
         # LLM Configuration
-        logger.info("---GENERATE AUDIO SEGMENT TRANSCRIPT FOR INGESTION---")
+        logger.info("---GENERATE SEGMENT TRANSCRIPT FOR INGESTION---")
         configuration = AssistantConfiguration()
         logger.info(configuration.default_llm_model['provider'])
         logger.info(configuration.default_llm_model['model_name'])
         chat_model = configuration.get_model(configuration.default_llm_model)
 
-        # extract segments from the video and audio
+        # Extract segments from the video and audio
         extract_segments(video_path, path_to_folder, video_id)
         segment_transcripts = {}
-        # generate audio segment transcript
+        # Generate audio segment transcript
         audio_directory = f"{path_to_folder}/audio_segments"
         audio_seg_transcripts = generate_audio_segment_transcript(audio_directory)
         for idx, audio_seg in enumerate(audio_seg_transcripts):
@@ -56,18 +57,33 @@ def generate_transcript(video_path: str, path_to_folder: str, video_id: str) -> 
                 "frame_transcript": [],
                 "combined_transcript": ""
             }
-        # generate frame segment transcript
+        # Generate frame segment transcript
         frame_directory = f"{path_to_folder}/frames"
         frame_seg_transcripts, img_path_list = generate_frame_segment_transcript(frame_directory)
         for frame_seg, img_path in zip(frame_seg_transcripts, img_path_list):
             segment_id = img_path.split('/')[0]
-            frame_segment_directory = os.path.join(frame_directory, segment_id)
-            segment_transcripts[segment_id]["frame_transcript"].append(frame_segment_directory)
+            segment_transcripts[segment_id]["frame_transcript"].append(frame_seg)
         print("Segment processing completed")
-        llm_requests(chat_model,segment_transcripts)
+
+        # Call LLM to combine audio and frame transcripts
+        transcript = llm_requests(chat_model,segment_transcripts)
+        json_str = json.dumps(transcript)
+        with open(os.path.join(path_to_folder,'transcript.json'), 'w') as f:
+            f.write(json_str)
+
+        # Clean up audio directory
+        if os.path.exists(audio_directory):
+            shutil.rmtree(audio_directory)
+            print(f"{audio_directory} directory deleted")
+        else:
+            print(f"{audio_directory} directory does not exist")
+
+
+
     except Exception as exc:
         logger.exception(f"Exception in creating transcription of frame segments: {exc}")
         raise
+    return transcript, path_to_folder
 
 def extract_segments(video_path: str, path_to_folder: str, video_id: str):
     SEGMENT_DURATION_SECONDS = 15
@@ -98,22 +114,15 @@ def llm_requests(chat_model, segment_transcripts) -> List[Dict[str, str]]:
     """
     req_output_list = []
 
-    req_parts = [{"type": "text", "text": prompts.AUDIO_EXTRACT_PROMPT_2} ]
+    req_parts = [{"type": "text", "text": prompts.COMBINED_EXTRACT_PROMPT} ]
     current_payload_size = (
         len(json.dumps(req_parts).encode("utf-8")))
 
-    # Read frames from the folder and convert to base64
-    base64_img = read_audio_segs_from_folder(path_to_frame_folder)
-
-    # Create LLM requests from the base64 images
-    img_list = get_audio_content_list(base64_img)
-
     is_llm_call_pending = True
-    for img, img_name in zip(img_list, base64_img.keys()):
-        path = img_name
-        projected_size = current_payload_size + len(json.dumps(img).encode("utf-8"))
+    for segment_transcript in segment_transcripts:
+        projected_size = current_payload_size + len(json.dumps(segment_transcript).encode("utf-8"))
         if projected_size > constants.MAX_PAYLOAD_BYTES:
-            logger.info(f"Batch {path} – would exceed 19 MB limit.")
+            logger.info(f"Batch – would exceed 19 MB limit.")
             req_output = get_llm_response(req_parts, chat_model)
             for req_op in req_output:
                 req_output_list.append(req_op)
@@ -122,72 +131,66 @@ def llm_requests(chat_model, segment_transcripts) -> List[Dict[str, str]]:
 
             # Reset the request parts and add the new image
             logger.info("Resetting request parts for the next batch.")
-            req_parts = {"type": "text", "text": prompts.AUDIO_EXTRACT_PROMPT_2}
+            req_parts = {"type": "text", "text": prompts.COMBINED_EXTRACT_PROMPT}
             current_payload_size = (
                 len(json.dumps(req_parts).encode("utf-8")))
             break
         else:
             is_llm_call_pending = True
-            req_parts.append(img)
+            req_parts.append({
+                 segment_transcript:
+                 segment_transcripts.get(segment_transcript)
+            })
             current_payload_size = projected_size
-            logger.info(f"Added {path} – current payload size: {current_payload_size / (1024 * 1024):.2f} MB")
+            logger.info(f"Added – current payload size: {current_payload_size / (1024 * 1024):.2f} MB")
     logger.info(f"Final payload size: {current_payload_size / (1024 * 1024):.2f} MB")
     if is_llm_call_pending:
         logger.info("Sending final request parts to LLM.")
         req_output = get_llm_response(req_parts, chat_model)
         for req_op in req_output:
             # print(req_op)
-            req_output_list.append(req_op)
+            req_output_list.append( {
+             req_op:
+             req_output.get(req_op)
+            })
         logger.info("Request parts sent to LLM")
     return req_output_list
 
 
 
-def get_llm_response(req_parts: List[Dict[str, str]], chat_model: BaseChatModel) -> list[dict]:
+def get_llm_response(req_parts, chat_model: BaseChatModel) -> list[dict]:
     # Prepare prompts and messages
     messages = [
         HumanMessage(content=[
             *req_parts  # Add all images as content parts
         ])
     ]
-    # Generate the frame transcript
-    audio_transcript = chat_model.invoke(messages)
-    # logger.debug(f"Generated audio transcript: {audio_transcript.content}")
-    # print(f"Generated audio transcript: {audio_transcript.content}")
-    # Use the parser
+    transcript = chat_model.invoke(messages)
     parser = FrameJsonOutputParser()
-
-    parsed_output = parser.parse(audio_transcript.content)
-
-    # Access example
-    # logger.info("Parsed Output: ", parsed_output)
-    #logger.info("Summary Title: " ,parsed_output[0]["summary"]["title"])
+    parsed_output = parser.parse(transcript.content)
     return parsed_output
 
 
-def get_audio_content_list(base64_audio : Dict[str,str]):
-    img_list = []
-    for key in base64_audio:
-        img_list.append(
-            {
-                "type": "media",
 
-                "data": base64_audio[key],
-                "mime_type": "audio/wav",
-            }
-        )
-    return img_list
+# ============ Test Code ===============
 
-if __name__ == "__main__":
-    # TODO: Update hardcoded path_to_frame_folder
+def create_ingestion_data(path_to_folder:str):
     video_id = uuid.uuid4()
     video_path = f"../docs/videos/video1.mp4"
+
     if os.path.isfile(video_path):
         print(f"{video_path} exists")
     else:
         print(f"{video_path} does not exist")
+
     path_to_folder = f"../docs/{video_id}"
     os.makedirs(os.path.dirname(path_to_folder), exist_ok=True)
     generate_transcript(video_path, path_to_folder, str(video_id))
+
+if __name__ == "__main__":
+    # TODO: Update hardcoded path_to_frame_folder
+    video_path = f"../docs/videos/video1.mp4"
+
+    create_ingestion_data(video_path)
 
 
