@@ -88,7 +88,7 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
         path = img_name
         projected_size = current_payload_size + len(json.dumps(img).encode("utf-8"))
         if projected_size > constants.MAX_PAYLOAD_BYTES:
-            logger.info(f"Batch {path} – would exceed 19 MB limit.")
+            logger.info(f"Batch {path} – would exceed {constants.MAX_PAYLOAD_MB} MB limit.")
             req_output = get_llm_response(req_parts, chat_model)
             for req_op in req_output:
                 req_output_list.append(req_op)

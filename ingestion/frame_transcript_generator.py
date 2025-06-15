@@ -141,9 +141,11 @@ def get_llm_response(req_parts: List[Dict[str, str]], chat_model: BaseChatModel)
             *req_parts  # Add all images as content parts
         ])
     ]
+    # print("max_tokens = " + chat_model.model_fields["max_tokens"])
     # Generate the frame transcript
+
     frame_transcript = chat_model.invoke(messages)
-    logger.debug(f"Generated frame transcript: {frame_transcript.content}")
+    #logger.debug(f"Generated frame transcript: {frame_transcript.content}")
     print(f"Generated frame transcript: {frame_transcript.content}")
     # Use the parser
     parser = FrameJsonOutputParser()

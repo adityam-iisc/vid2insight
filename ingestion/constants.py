@@ -1,4 +1,4 @@
-MAX_PAYLOAD_MB = 19
+MAX_PAYLOAD_MB = 2
 MAX_PAYLOAD_BYTES = MAX_PAYLOAD_MB * 1024 * 1024
 FRAME_PATH= "./docs/frames"
 # AUDIO_SEGMENTS_PATH = "./docs/audio_segments"
