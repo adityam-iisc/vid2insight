@@ -15,7 +15,8 @@ from agent.doc_agent import prompts, constants
 from agent.doc_agent.state.agent_state import AgentState
 
 
-def load_frame_transcript(state: AgentState, *, config: RunnableConfig) -> Dict[str, str]:
+def initialize_context(state: AgentState, *, config: RunnableConfig) -> Dict[str, str]:
+
     """
     Load the frame transcript from the state.
 
@@ -27,33 +28,45 @@ def load_frame_transcript(state: AgentState, *, config: RunnableConfig) -> Dict[
         Dict[str, str]: A dictionary containing the frame transcript and intent.
     """
     try:
-        logger.info("---LOADING FRAME TRANSCRIPT---")
-        if state.cumulative_transcript == ' ':
-            frame_transcript = raw_data.FRAME_DATA
-            logger.debug(f"Loaded frame transcript: {frame_transcript}")
-            intent = config['metadata'].get('intent', '')
-            logger.debug(f"Intent from config: {intent}")
-            configuration = AssistantConfiguration.from_runnable_config(config)
-            chat_model = configuration.get_model(configuration.default_llm_model)
-            # generate_cumulative_transcript =
-            message = [
-                SystemMessage(content=prompts.GENERATE_CUMULATIVE_TRANSCRIPT.format(context=frame_transcript)),
-                HumanMessage(content="Generate a cumulative transcript based on the provided frame transcript.")
-            ]
-            response = chat_model.invoke(message)
+        logger.info("---initialize context---")
 
-            return {
-                "raw_transcript": frame_transcript,
-                "intent": intent,
-                "cumulative_transcript": response.content
-            }
-        else:
-            logger.info("everything is already loaded, skipping load_frame_transcript")
-            return {
-                "intent":config['metadata'].get('intent', '')
-
-            }
-
+        """
+        making it dummy as logic got changed will re-use it for further enhancement where I need to get some extra information
+        when we add some extra functionality like generating PPT etc 
+        
+        """
+        # if state.context == ' ':
+        #     frame_transcript =
+        #     logger.debug(f"Loaded frame transcript: {frame_transcript}")
+        #     intent = config['metadata'].get('intent', '')
+        #     logger.debug(f"Intent from config: {intent}")
+        #     configuration = AssistantConfiguration.from_runnable_config(config)
+        #     chat_model = configuration.get_model(configuration.default_llm_model)
+        #     # generate_cumulative_transcript =
+        #     message = [
+        #         SystemMessage(content=prompts.GENERATE_CUMULATIVE_TRANSCRIPT.format(context=frame_transcript)),
+        #         HumanMessage(content="Generate a cumulative transcript based on the provided frame transcript.")
+        #     ]
+        #     response = chat_model.invoke(message)
+        #
+        #     return {
+        #         "raw_transcript": frame_transcript,
+        #         "intent": intent,
+        #         "cumulative_transcript": response.content
+        #     }
+        # else:
+        #     logger.info("everything is already loaded, skipping load_frame_transcript")
+        #     return {
+        #         "intent":config['metadata'].get('intent', '')
+        #
+        #     }
+        if state.intent not in [e.value for e in constants.Intent]:
+            logger.error(f"Invalid intent: {state.intent}. Must be one of {list(constants.Intent)}.")
+            raise ValueError(f"Invalid intent: {state.intent}. Must be one of {list(constants.Intent)}.")
+        # Redundant intent not required will remove in next iteration
+        return {
+            "intent": state.intent,
+        }
     except Exception as exc:
         logger.exception(f"Exception in load_frame_transcript: {exc}")
         raise
@@ -84,7 +97,7 @@ def generate_product_document(state: AgentState, *, config: RunnableConfig) -> D
         #     ] + state.messages
         messages = [
             SystemMessage(content=prompts.PRODUCT_DOCUMENT_PROMPTS),
-            HumanMessage(content=state.cumulative_transcript)
+            HumanMessage(content=state.video_context)
         ] + state.messages
         logger.debug(f"Messages for product document: {messages}")
         product_doc = chat_model.invoke(messages)
@@ -128,7 +141,7 @@ def generate_executive_summary(state: AgentState, *, config: RunnableConfig) -> 
         # if len(state.messages) == 1:
         messages = [
             SystemMessage(content=prompts.EXECUTIVE_SUMMARY_PROMPT),
-            HumanMessage(content=state.cumulative_transcript)
+            HumanMessage(content=state.video_context)
         ] + state.messages
         # else:
         #     messages = state.messages
@@ -185,6 +198,9 @@ def chat(state: AgentState, *, config: RunnableConfig) -> Dict[str, Union[str, L
     """
     try:
         logger.debug("---CHAT---")
+        if state.intent not in [e.value for e in constants.Intent]:
+            logger.error(f"Invalid intent: {state.intent}. Must be one of {list(constants.Intent)}.")
+            raise ValueError(f"Invalid intent: {state.intent}. Must be one of {list(constants.Intent)}.")
         configuration = AssistantConfiguration.from_runnable_config(config)
         chat_model = configuration.get_model(configuration.default_llm_model)
         # if hasattr(state, 'messages') and isinstance(state.messages, list) and len(state.messages) == 1:
@@ -205,7 +221,7 @@ def chat(state: AgentState, *, config: RunnableConfig) -> Dict[str, Union[str, L
             Here is generated product document:
             """ + state.product_document
         else:
-            context = state.cumulative_transcript
+            context = state.video_context
         messages = [SystemMessage(content=prompts.CHAT_SYSTEM_PROMPT.format(context=context))
                            ] + state.messages
         logger.debug(f"Messages for chat: {messages}")
@@ -216,7 +232,7 @@ def chat(state: AgentState, *, config: RunnableConfig) -> Dict[str, Union[str, L
             "answer": response.content
         }
     except Exception as exc:
-        logger.exception(f"Exception in chat: {exc}")
+        logger.exception(f"Exception in chat: {exc}", exc_info=True)
         raise
 
 

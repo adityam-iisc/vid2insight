@@ -7,22 +7,18 @@ from agent.common.state.input_state import InputState
 class AgentState(InputState):
     """Represents the  state for the agent."""
 
-    video_context : str = field(default=" ")
-    """
-    Contextual information relevant to the agent's task
-    """
+
+    cumulative_transcript: str = field(default=" ")
 
     intent: str = field(default="")
 
     exec_summary: str = field(default="")
 
-    product_document: str = field(default="")
+    product_document: bool = field(default=False)
 
-    is_modification_required: bool = field(default=False)
+    mcq: str = field(default="")
 
-    feedback:str = field(default="")
-
-    turn:int  = field(default=0)
+    notes_summary:str = field(default="")
 
     answer: str = field(default="")
     """Final answer"""

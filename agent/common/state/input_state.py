@@ -10,3 +10,13 @@ class InputState:
     """Represents the input state for the agent."""
     messages: Annotated[list[AnyMessage], add_messages]
     """Messages track the primary execution state of the agent."""
+
+    intent: str
+    """
+    The work intent
+    """
+
+    video_context: str
+    """
+    The context for the video
+    """

@@ -1,19 +1,19 @@
 import asyncio
-from pprint import pprint
 
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import StateGraph, START, END
 
+import raw_data
 from agent.config.assistant_config import AssistantConfiguration
 from agent.config.initialize_logger import logger
 from agent.doc_agent import nodes, constants
 from agent.doc_agent.state.agent_state import AgentState
-from agent.doc_agent.state.input_state import InputState
+from agent.common.state.input_state import InputState
 from agent.doc_agent.state.output_state import OutputState
 
 graph = StateGraph(AgentState, input=InputState, output=OutputState, config_schema=AssistantConfiguration)
 
-graph.add_node(constants.Routes.CONTEXT.value, nodes.load_frame_transcript)
+graph.add_node(constants.Routes.CONTEXT.value, nodes.initialize_context)
 
 graph.add_node(constants.Routes.EXECUTIVE_SUMMARY.value, nodes.generate_executive_summary)
 
@@ -64,13 +64,13 @@ async def main():
            message = input("Enter message: ")
            config = {"configurable": {"thread_id": "1", "user_id": "kumarsa2", 'intent': intent,
                                       'file_path': '/Users/kumarsa2/Downloads/abc.mp4'}}
+           context = raw_data.CUMULATIVE_SUMMARY
 
-           payload = {"messages": [{"role": "human", "content": message}]}
+           payload = {"messages": [{"role": "human", "content": message}], 'intent': intent, 'video_context': context}
            res = await app.ainvoke(payload, config)
            print('---------OUTPUT---------------\n')
            print(res['answer'])
 
-           print('---------OUTPUT---------------\n')
     except Exception as e:
         logger.error("An error occurred while invoking ainvoke:", exc_info=True)
 
