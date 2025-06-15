@@ -71,7 +71,6 @@ async def main():
            print(res['answer'])
 
            print('---------OUTPUT---------------\n')
-           print(res['answer'].content)
     except Exception as e:
         logger.error("An error occurred while invoking ainvoke:", exc_info=True)
 

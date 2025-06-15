@@ -83,7 +83,8 @@ def generate_product_document(state: AgentState, *, config: RunnableConfig) -> D
         #         SystemMessage(content=prompts.PRODUCT_DOCUMENT_PROMPTS.format(context=state.raw_transcript)),
         #     ] + state.messages
         messages = [
-            SystemMessage(content=prompts.PRODUCT_DOCUMENT_PROMPTS.format(context=state.cumulative_transcript)),
+            SystemMessage(content=prompts.PRODUCT_DOCUMENT_PROMPTS),
+            HumanMessage(content=state.cumulative_transcript)
         ] + state.messages
         logger.debug(f"Messages for product document: {messages}")
         product_doc = chat_model.invoke(messages)
@@ -126,7 +127,8 @@ def generate_executive_summary(state: AgentState, *, config: RunnableConfig) -> 
         #     ] + state.messages
         # if len(state.messages) == 1:
         messages = [
-            SystemMessage(content=prompts.EXECUTIVE_SUMMARY_PROMPT.format(context=state.cumulative_transcript)),
+            SystemMessage(content=prompts.EXECUTIVE_SUMMARY_PROMPT),
+            HumanMessage(content=state.cumulative_transcript)
         ] + state.messages
         # else:
         #     messages = state.messages
@@ -134,9 +136,9 @@ def generate_executive_summary(state: AgentState, *, config: RunnableConfig) -> 
         exec_summary = chat_model.invoke(messages)
         logger.debug(f"Generated executive summary: {exec_summary}")
         return {
-            "exec_summary": exec_summary,
+            "exec_summary": exec_summary.content,
             "messages": exec_summary,
-            'answer': exec_summary
+            'answer': exec_summary.content
         }
     except Exception as exc:
         logger.exception(f"Exception in generate_executive_summary: {exc}")
@@ -197,7 +199,7 @@ def chat(state: AgentState, *, config: RunnableConfig) -> Dict[str, Union[str, L
         if state.exec_summary != '':
             context = """
             Here is generated executive summary:
-            """ + state.exec_summary.content
+            """ + state.exec_summary
         elif state.product_document != '':
             context = """
             Here is generated product document:
@@ -211,7 +213,7 @@ def chat(state: AgentState, *, config: RunnableConfig) -> Dict[str, Union[str, L
         logger.debug(f"Chat response: {response.content if hasattr(response, 'content') else response}")
         return {
             "messages": response.content if hasattr(response, 'content') else response,
-            "answer": AIMessage(content=response.content)
+            "answer": response.content
         }
     except Exception as exc:
         logger.exception(f"Exception in chat: {exc}")
@@ -254,8 +256,7 @@ def evaluate(state: AgentState, *, config: RunnableConfig) -> Dict[str, str]:
             "is_modification_required": response.is_modification_required,
             "feedback": response.feedback,
             "turn": state.turn +1,
-            'answer': state.messages[-1],
-            'messages': HumanMessage(state.messages[-1])
+            'messages': HumanMessage(f"feedback: {response.feedback}")
         }
     except Exception as exc:
         logger.exception(f"Exception in evaluate: {exc}")

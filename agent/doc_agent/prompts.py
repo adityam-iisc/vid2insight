@@ -93,9 +93,6 @@ EXECUTIVE_SUMMARY_PROMPT = """
         User:  
         Please summarize the context between the delimiters.
         
-        <video_context>  
-        {context}  
-        </video_context>
         
         **Also incorporate any prior user messages for specific instructions, if applicable, while keeping the original summarization purpose intact.**
         """
@@ -222,10 +219,6 @@ Instructions:
 • Maintain a professional, concise, and human-readable tone.
 • Reference the user by name (e.g., Sanjay) if appropriate, and ensure continuity across the conversation.
 
-User Input:
-<video_transcript>
-{context}
-</video_transcript>
 """
 
 
