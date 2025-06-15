@@ -1,0 +1,28 @@
+
+version: 1
+formatters:
+  simple:
+    format: '%(asctime)s - %(levelname)s - File: %(filename)s - %(funcName)s() - Line: %(lineno)d - Process ID: %(process)d - %(processName)s - Thread ID: %(thread)d - %(threadName)s - Message: %(message)s'
+
+filters:
+  exclude_trace:
+    (): logging.Filter
+    name: _trace
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    filters: [exclude_trace]
+    stream: ext://sys.stdout
+
+loggers:
+  zero-bytes-logger:
+    level: DEBUG
+    handlers: [console]
+    propagate: yes
+
+root:
+  level: DEBUG
+  handlers: [console]

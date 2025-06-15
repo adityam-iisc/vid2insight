@@ -5,16 +5,29 @@ description = ""
 authors = [
     {name = "Sanjay Kumar",email = "trmpsanjay@gmail.com"},
     {name = "Aditya Mukhopadhyay", email = "adityam@iisc.ac.in"},
+    {name = "Trupti Rushikesh", email = "truptir@iisc.ac.in"},
     {name= "Ankit Kumar", email = "ankitkumar18@iisc.ac.in"},
     {name = "Danish Akhlaq", email = "danishakhlaq@iisc.ac.in"},
-    {name = "Trupti Rushikesh", email = "truptir@iisc.ac.in"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12,<=3.13"
 dependencies = [
+    "langgraph (>=0.4.8,<0.5.0)",
+    "langchain (>=0.3.25,<0.4.0)",
+    "langsmith (>=0.3.45,<0.4.0)",
+    "dotenv (>=0.9.9,<0.10.0)",
+    "langchain-google-genai (>=2.1.5,<3.0.0)",
+    "ruamel-yaml (>=0.18.14,<0.19.0)",
+    "streamlit (>=1.45.1,<2.0.0)"
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+packages = [
+    { include = "agent" }
+]
