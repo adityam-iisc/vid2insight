@@ -108,6 +108,12 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
 
 
 def get_llm_response(req_parts, chat_model: BaseChatModel) -> list[dict]:
+    """
+    Generate a response from the LLM based on the provided request parts.
+    :param req_parts:  list[dict[str, str] | dict[str, str | list]
+    :param chat_model: BaseChatModel
+    :return: list[dict] : List of dictionaries containing the LLM response.
+    """
     print("Generating LLM response...")
     # Prepare prompts and messages
     messages = [

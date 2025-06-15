@@ -86,6 +86,13 @@ def generate_transcript(video_path: str, path_to_folder: str, video_id: str) -> 
     return transcript, path_to_folder
 
 def extract_segments(video_path: str, path_to_folder: str, video_id: str):
+    """
+    Extract segments from the video and audio.
+    :param video_path: folder path to the video file
+    :param path_to_folder: folder path to store the extracted segments
+    :param video_id: unique identifier for the video
+    :return:
+    """
     SEGMENT_DURATION_SECONDS = 15
     MAX_FRAMES_PER_SEGMENT_FOR_LLM = 10
     SCENE_DETECTION_THRESHOLD = 27.0
@@ -159,6 +166,12 @@ def llm_requests(chat_model, segment_transcripts) -> List[Dict[str, str]]:
 
 
 def get_llm_response(req_parts, chat_model: BaseChatModel) -> list[dict]:
+    """
+      Generate a response from the LLM based on the provided request parts.
+      :param req_parts:  list[dict[str, str] | dict[str, str | list]
+      :param chat_model: BaseChatModel
+      :return: list[dict] : List of dictionaries containing the LLM response.
+      """
     # Prepare prompts and messages
     messages = [
         HumanMessage(content=[

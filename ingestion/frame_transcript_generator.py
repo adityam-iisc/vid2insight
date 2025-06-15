@@ -52,6 +52,11 @@ def generate_frame_segment_transcript(path_to_frame_folder: str) -> tuple[dict[s
         raise
 
 def read_frames_from_folder(path_to_frame_folder) -> Dict[str, str]:
+    """
+    Read frames from a folder and convert them to base64 encoded strings.
+    :param path_to_frame_folder: folder path containing frame segments
+    :return: base 64 encoded strings of images in a dictionary
+    """
     directory = path_to_frame_folder
     num_frame_dir = sum(1 for entry in os.scandir(directory) if entry.is_dir())
     img_base64_dict = {}
@@ -124,6 +129,12 @@ def llm_requests(chat_model, path_to_frame_folder):
 
 
 def get_llm_response(req_parts: List[Dict[str, str]], chat_model: BaseChatModel) -> list[dict]:
+    """
+      Generate a response from the LLM based on the provided request parts.
+      :param req_parts:  list[dict[str, str] | dict[str, str | list]
+      :param chat_model: BaseChatModel
+      :return: list[dict] : List of dictionaries containing the LLM response.
+    """
     # Prepare prompts and messages
     messages = [
         HumanMessage(content=[

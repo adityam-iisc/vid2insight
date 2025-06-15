@@ -119,6 +119,12 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
 
 
 def get_llm_response(req_parts: List[Dict[str, str]], chat_model: BaseChatModel) -> list[dict]:
+    """
+          Generate a response from the LLM based on the provided request parts.
+          :param req_parts:  list[dict[str, str] | dict[str, str | list]
+          :param chat_model: BaseChatModel
+          :return: list[dict] : List of dictionaries containing the LLM response.
+    """
     # Prepare prompts and messages
     messages = [
         HumanMessage(content=[
@@ -135,6 +141,11 @@ def get_llm_response(req_parts: List[Dict[str, str]], chat_model: BaseChatModel)
 
 
 def get_audio_content_list(base64_audio : Dict[str,str]):
+    """
+    Create a list of audio content dictionaries from the base64 encoded audio data.
+    :param base64_audio: folder path to the audio segments
+    :return: base64 encoded audio content list for LLM requests
+    """
     img_list = []
     for key in base64_audio:
         img_list.append(
