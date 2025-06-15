@@ -201,7 +201,7 @@ def chat(state: AgentState, *, config: RunnableConfig) -> Dict[str, Union[str, L
         elif state.product_document != '':
             context = """
             Here is generated product document:
-            """ + state.product_document.content
+            """ + state.product_document
         else:
             context = state.cumulative_transcript
         messages = [SystemMessage(content=prompts.CHAT_SYSTEM_PROMPT.format(context=context))
@@ -255,7 +255,7 @@ def evaluate(state: AgentState, *, config: RunnableConfig) -> Dict[str, str]:
             "feedback": response.feedback,
             "turn": state.turn +1,
             'answer': state.messages[-1],
-            'messages': state.messages[-1]
+            'messages': HumanMessage(state.messages[-1])
         }
     except Exception as exc:
         logger.exception(f"Exception in evaluate: {exc}")
