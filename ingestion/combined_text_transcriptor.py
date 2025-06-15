@@ -187,9 +187,9 @@ def get_llm_response(req_parts, chat_model: BaseChatModel) -> list[dict]:
 
 # ============ Test Code ===============
 
-def create_ingestion_data(path_to_folder:str):
+def create_ingestion_data(video_path:str):
     video_id = uuid.uuid4()
-    video_path = f"../docs/videos/video1.mp4"
+
 
     if os.path.isfile(video_path):
         print(f"{video_path} exists")
@@ -202,7 +202,8 @@ def create_ingestion_data(path_to_folder:str):
 
 if __name__ == "__main__":
     # TODO: Update hardcoded path_to_frame_folder
-    video_path = f"../docs/videos/video1.mp4"
+    # video_path = f"../docs/videos/video1.mp4"
+    video_path = f"../docs/videos/video2.mp4"
 
     create_ingestion_data(video_path)
 
