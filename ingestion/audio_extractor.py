@@ -6,7 +6,7 @@ import logging
 import shutil
 
 from pydub import AudioSegment
-from agent.doc_agent.initialize_logger  import logger
+from agent.config.initialize_logger import logger
 
 
 class VideoAudioProcessor:

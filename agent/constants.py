@@ -9,15 +9,16 @@ class AgentType(Enum):
     """
     student_agent = "student_agent"
     doc_agent = "doc_agent"
+    chat = "chat"
 
 
-class Router(Enum):
+class Routes(Enum):
     """
     Enum for router types.
     """
     student_subgraph = "student_subgraph"
     doc_subgraph = "doc_subgraph"
-    agent_router = "chat"
+    agent_chat = "chat"
     response_format = "response_format"
 
 

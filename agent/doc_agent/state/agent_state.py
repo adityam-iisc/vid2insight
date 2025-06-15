@@ -7,13 +7,6 @@ from agent.common.state.input_state import InputState
 class AgentState(InputState):
     """Represents the  state for the agent."""
 
-    video_context : str = field(default=" ")
-    """
-    Contextual information relevant to the agent's task
-    """
-
-    intent: str = field(default="")
-
     exec_summary: str = field(default="")
 
     product_document: str = field(default="")

@@ -62,8 +62,7 @@ async def main():
            #generate_exec_summary
            intent = input("Enter intent (generate_exec_summary, generate_docs, doc_chat) or 'exit' to quit: ")
            message = input("Enter message: ")
-           config = {"configurable": {"thread_id": "1", "user_id": "kumarsa2", 'intent': intent,
-                                      'file_path': '/Users/kumarsa2/Downloads/abc.mp4'}}
+           config = {"configurable": {"thread_id": "1"}}
            context = raw_data.CUMULATIVE_SUMMARY
 
            payload = {"messages": [{"role": "human", "content": message}], 'intent': intent, 'video_context': context}

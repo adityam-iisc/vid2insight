@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from agent.common.state.input_state import InputState
+from agent.state.input_state import InputState
 
 
 @dataclass(kw_only=True)
