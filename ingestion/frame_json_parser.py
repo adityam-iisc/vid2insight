@@ -1,8 +1,11 @@
+import json
+import re
 
 from typing import List, Dict
 from langchain_core.output_parsers import BaseOutputParser
-import json
-import re
+
+from agent.config.initialize_logger import logger
+
 
 class FrameJsonOutputParser(BaseOutputParser):
     """
@@ -20,7 +23,12 @@ class FrameJsonOutputParser(BaseOutputParser):
             cleaned_text = re.sub(r"^```", "", cleaned_text)
         if cleaned_text.endswith("```"):
             cleaned_text = cleaned_text[:-3].strip()
-
+        cleaned_text = re.sub(r'\\_', '_', cleaned_text)
+        try:
+            cleaned_text = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', cleaned_text)
+        except re.error as e:
+            logger.error(f"Regex error while cleaning text: {e}")
+        parsed = {}
         try:
             parsed = json.loads(cleaned_text)
         except json.JSONDecodeError as e:
