@@ -122,3 +122,41 @@ Your task is to:
 }
 
 """
+
+FINAL_PROMPT= """
+You will be given one audio segment and multiple images.
+
+Each image and the audio segment are related and should be treated as part of the same scene or explanation.
+
+Your tasks:
+
+1. **Transcribe the audio** segment into a concise, fluent explanation. Summarize it clearly, keeping only the key spoken points. If multiple speakers are present, you may omit speaker labels unless needed for clarity.
+
+2. **For each image**, generate a concise, presentation-style transcript that explains:
+   - What is shown
+   - Key points in the image
+   - Any text or diagrammatic information that’s important
+
+   Return these as a list, one item per image.
+
+3. **Create a single, combined transcript** that integrates both the audio and image content. This should read as if a presenter is explaining the full content in one go — fluent, concise, and logically ordered.
+
+Return your response in the following valid JSON format:
+
+```json
+{
+  "audio_transcript": "Concise transcription of the audio segment.",
+  "image_transcripts": [
+    {
+      "image_nbr": 1,
+      "transcript": "Concise explanation of image 1."
+    },
+    {
+      "image_nbr": 2,
+      "transcript": "Concise explanation of image 2."
+    }
+  ],
+  "combined_transcript": "Integrated explanation combining audio and all image content."
+}
+
+"""
