@@ -1,14 +1,7 @@
 import json
 
-import cv2
 from langchain_core.language_models import BaseChatModel
-from langchain_core.runnables import RunnableConfig
-from langchain_google_genai import Part
-
-import re
-import agent
 from agent.config.initialize_logger import logger
-
 from agent.config.assistant_config import AssistantConfiguration
 from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage
 
@@ -25,7 +18,7 @@ def generate_segment_transcript(path_to_folder: str) -> list[dict]:
     Generate a frame transcript based on the agent's state and configuration.
 
     Args:
-        config (RunnableConfig): The configuration for the runnable.
+        path_to_folder (str): The path to the folder containing audio segments.
 
     Returns:
         Dict[str, str]: A dictionary containing the generated frame transcript and related messages.
@@ -46,7 +39,7 @@ def generate_segment_transcript(path_to_folder: str) -> list[dict]:
         logger.info(configuration.default_llm_model['provider'])
         logger.info(configuration.default_llm_model['model_name'])
         chat_model = configuration.get_model(configuration.default_llm_model)
-        llm_requests(chat_model,path_to_folder)
+        return llm_requests(chat_model, path_to_folder)
     except Exception as exc:
         logger.exception(f"Exception in creating transcription of frame segments: {exc}")
         raise
@@ -134,7 +127,12 @@ def get_llm_response(req_parts, chat_model: BaseChatModel) -> list[dict]:
     return parsed_output
 
 
-def get_content(path_to_folder: str) :
+def get_content(path_to_folder: str):
+    """
+    Create a content dictionary containing audio segments and their corresponding frames.
+    :param path_to_folder:
+    :return:
+    """
     audio_directory = os.path.join(path_to_folder, "audio_segments")
     frames_directory = os.path.join(path_to_folder, "frames")
     num_frame_dir = sum(1 for entry in os.scandir(frames_directory) if entry.is_dir())
@@ -175,8 +173,8 @@ def get_content(path_to_folder: str) :
 
 
 
-if __name__ == "__main__":
-    # TODO: Update hardcoded path_to_frame_folder
-    video_id = "1234"
-    path_to_folder = f"../docs/{video_id}"
-    generate_segment_transcript(path_to_folder)
+# if __name__ == "__main__":
+#     # TODO: Update hardcoded path_to_frame_folder
+#     video_id = ""
+#     path_to_folder = f"../docs/"
+#     generate_segment_transcript(path_to_folder)
