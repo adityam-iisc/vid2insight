@@ -203,7 +203,7 @@ def create_ingestion_data(video_path:str):
 if __name__ == "__main__":
     # TODO: Update hardcoded path_to_frame_folder
     # video_path = f"../docs/videos/video1.mp4"
-    video_path = f"../docs/videos/video2.mp4"
+    video_path = f"../docs/videos/video3.mp4"
 
     create_ingestion_data(video_path)
 
