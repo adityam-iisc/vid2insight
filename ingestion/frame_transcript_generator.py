@@ -37,8 +37,6 @@ def generate_frame_segment_transcript(path_to_frame_folder: str) -> tuple[dict[s
         logger.info("---GENERATE FRAME TRANSCRIPT FOR INGESTION---")
 
         configuration = AssistantConfiguration()
-        logger.info(configuration.default_llm_model['provider'])
-        logger.info(configuration.default_llm_model['model_name'])
         chat_model = configuration.get_model(configuration.default_llm_model)
         req_output_list= llm_requests(chat_model, path_to_frame_folder)
         return req_output_list
@@ -89,9 +87,6 @@ def llm_requests(chat_model, path_to_frame_folder):
         req_output = get_llm_response(req_parts, chat_model)
         req_output_list.append({'title': img_name, 'explanation': req_output})
         req_parts = [prompts.FRAME_EXTRACT_PROMPT]
-
-
-
 
     return req_output_list
 
