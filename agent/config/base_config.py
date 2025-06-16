@@ -9,6 +9,7 @@ from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 from langchain_core.runnables import RunnableConfig, ensure_config
 
+from agent.config import constants
 from agent.config.initialize_logger import logger
 
 load_dotenv()
@@ -34,6 +35,7 @@ class BaseConfiguration:
         """
         provider = model['provider']
         model_name = model['model_name']
+        max_tokens = model['max_tokens'] if 'max_tokens' in model else constants.MAX_OUTPUT_TOKENS
         logger.info(f"Loading model {model['model_name']} from provider {provider}")
 
         model_instance = None
@@ -45,7 +47,8 @@ class BaseConfiguration:
                 model_kwargs = {"api_version": os.environ["AZURE_OPENAI_API_VERSION"]}
                 model_instance = init_chat_model(model_name, model_provider=provider, **model_kwargs)
             case "google_genai":
-                model_instance = init_chat_model(model_name, model_provider=provider)
+                model_kwargs = {"max_tokens": max_tokens}
+                model_instance = init_chat_model(model_name, model_provider=provider, **model_kwargs)
             case _:
                 raise ValueError(f"Unsupported: {provider}")
 

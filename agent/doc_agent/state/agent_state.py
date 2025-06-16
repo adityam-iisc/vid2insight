@@ -9,16 +9,19 @@ class AgentState(InputState):
 
     raw_transcript: str = field(default="")
 
+    cumulative_transcript: str = field(default=" ")
+
     intent: str = field(default="")
 
     exec_summary: str = field(default="")
 
     product_document: bool = field(default=False)
 
-    # user_messages: str = field(default="")
-    # """
-    # Latest user messages in the conversation.
-    # """
+    is_modification_required: bool = field(default=False)
+
+    feedback:str = field(default="")
+
+    turn:int  = field(default=0)
 
     answer: str = field(default="")
     """Final answer"""

@@ -1,4 +1,5 @@
 from enum import Enum
+from pydantic import BaseModel, Field
 
 
 class Routes(Enum):
@@ -15,6 +16,7 @@ class Routes(Enum):
     PRODUCT_DOCUMENTS = "product_documents"
     EXECUTIVE_SUMMARY = "executive_summary"
     DOC_CHAT = "doc_chat"
+    EVALUATOR = "evaluator"
 
     @classmethod
     def get_route(cls, route_name: str):
@@ -50,6 +52,7 @@ class Intent(Enum):
     GENERATE_DOCS = "generate_docs"
     DOC_CHAT = "doc_chat"
 
+
     @classmethod
     def get_intent(cls, intent_name: str):
         """
@@ -69,3 +72,14 @@ class Intent(Enum):
         except KeyError:
             raise ValueError(
                 f"Invalid intent name: '{intent_name}'. Available intents are: {', '.join(cls.__members__.keys())}.")
+
+
+
+from pydantic import BaseModel, Field
+
+class EvaluatorResponseModel(BaseModel):
+    """
+    Model representing the response from the evaluator.
+    """
+    feedback: str = Field(description="feedback for the user based on the evaluation")
+    is_modification_required: bool = Field(description="Indicates whether a modification is required based on the evaluation")

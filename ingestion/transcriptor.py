@@ -217,9 +217,9 @@ def create_ingestion_data(video_path:str):
     os.makedirs(path_to_folder, exist_ok=True)
     generate_transcript(video_path, path_to_folder, str(video_id))
 
-# if __name__ == "__main__":
-#     # TODO: Update hardcoded path_to_frame_folder
-#     # video_path = f"../docs/videos/video1.mp4"
-#     video_path = f"../docs/videos/video3.mp4"
-#
-#     create_ingestion_data(video_path)
+if __name__ == "__main__":
+    # TODO: Update hardcoded path_to_frame_folder
+    # video_path = f"../docs/videos/video1.mp4"
+    video_path = f"../docs/videos/video1.mp4"
+
+    create_ingestion_data(video_path)

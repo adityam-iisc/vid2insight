@@ -88,26 +88,24 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
         path = img_name
         projected_size = current_payload_size + len(json.dumps(img).encode("utf-8"))
         if projected_size > constants.MAX_PAYLOAD_BYTES:
-            logger.info(f"Batch {path} – would exceed  MB limit.")
+            logger.info(f"Batch {path} – would exceed {constants.MAX_PAYLOAD_MB} MB limit.")
             req_output = get_llm_response(req_parts, chat_model)
-            for req_op in req_output["segments"]:
+            for req_op in req_output:
                 req_output_list.append(req_op)
-            # logger.info("Request parts sent to LLM: {}",len(req_output_list))
+            logger.info("Request parts sent to LLM: {}",len(req_output_list))
             is_llm_call_pending = False
 
             # Reset the request parts and add the new image
             logger.info("Resetting request parts for the next batch.")
-            req_parts = [{"type": "text", "text": prompts.AUDIO_EXTRACT_PROMPT}]
+            req_parts = {"type": "text", "text": prompts.AUDIO_EXTRACT_PROMPT}
             current_payload_size = (
                 len(json.dumps(req_parts).encode("utf-8")))
-
-
-
-        is_llm_call_pending = True
-        req_parts.append(img)
-        projected_size = current_payload_size + len(json.dumps(img).encode("utf-8"))
-        current_payload_size = projected_size
-        logger.info(f"Added {path} – current payload size: {current_payload_size / (1024 * 1024):.2f} MB")
+            break
+        else:
+            is_llm_call_pending = True
+            req_parts.append(img)
+            current_payload_size = projected_size
+            logger.info(f"Added {path} – current payload size: {current_payload_size / (1024 * 1024):.2f} MB")
     logger.info(f"Final payload size: {current_payload_size / (1024 * 1024):.2f} MB")
     if is_llm_call_pending:
         logger.info("Sending final request parts to LLM.")
