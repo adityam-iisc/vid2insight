@@ -18,7 +18,7 @@ from ingestion.frame_json_parser import FrameJsonOutputParser
 from ingestion.frame_transcript_generator import generate_frame_segment_transcript
 
 
-def generate_transcript(video_path: str, output_dir: str, segment_duration: int) -> tuple(str):
+def generate_transcript(video_path: str, output_dir: str, segment_duration: int) -> tuple[str]:
     """
     Generate a frame transcript based on the agent's state and configuration.
 
@@ -167,19 +167,17 @@ def get_llm_response(req_parts, chat_model: BaseChatModel) -> list[dict]:
 
 # ============ Test Code ===============
 
-def create_ingestion_data(video_path: str, output_dir: str, segment_duration_seconds: int = 15) -> bool:
+def create_ingestion_data(video_path, output_dir: str, segment_duration_seconds: int = 15) -> tuple[str]:
     try:
         if os.path.isfile(video_path):
             print(f"{video_path} exists")
         else:
             print(f"{video_path} does not exist")
-            return False
 
-        generate_transcript(video_path, output_dir, segment_duration_seconds)
-        return True
+        return generate_transcript(video_path, output_dir, segment_duration_seconds)
     except Exception as e:
         logger.exception(e)
-        return False
+        return '', ''
 
 
 # if __name__ == "__main__":
