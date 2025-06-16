@@ -1,23 +1,59 @@
+import hashlib
+
 import streamlit as st
 import os
-import tempfile
 import asyncio
 import json
 from agent.student_agent.student_graph import app as student_app
 from streamlit.runtime import get_instance
 from streamlit.runtime.scriptrunner import get_script_run_ctx
+from ingestion.combined_text_transcriptor import create_ingestion_data
 
 
 
 class PlaceholderFunctions:
+
+    @staticmethod
+    def compute_video_id(video_hash: str, length: int) -> str:
+        """
+        Compute a unique fingerprint for a video by hashing together:
+          1. The video's content hash (SHA-256 hex digest)
+          2. The video's length in bytes
+
+        Args:
+            video_hash (str): SHA-256 hex digest of the video content.
+            length (int): Length of the video file in bytes.
+
+        Returns:
+            str: SHA-256 hex digest of the concatenated input.
+        """
+        # Combine the two pieces of data in a canonical way
+        payload = f"{video_hash}:{length}"
+        # Compute and return the SHA-256 of that payload
+        return hashlib.sha256(payload.encode('utf-8')).hexdigest()
+
     @staticmethod
     def process_video(video_input, consider_audio, consider_video, interval):
+        uuid = PlaceholderFunctions.compute_video_id(
+            hashlib.sha256(video_input.read()).hexdigest(),
+            video_input.size
+        )
+        video_input.seek(0)
+        input_path = '../docs/input'
+        output_path = os.path.join('../docs/', uuid)
         if video_input is not None:
-            suffix = os.path.splitext(video_input.name)[1]
-            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_file:
-                tmp_file.write(video_input.read())
-                return tmp_file.name
-        return None
+            if os.path.exists(os.path.join(input_path, f'{uuid}.mp4')):
+                st.info('Video already processed. Loading existing data...')
+                transcript = json.load(open(os.path.join(output_path, 'transcript.json')))
+                st.session_state.context = transcript
+                return True
+            os.makedirs(input_path, exist_ok=True)
+            os.makedirs(output_path, exist_ok=True)
+            with open(os.path.join(input_path,f'{uuid}.mp4'), 'wb') as f:
+                f.write(video_input.read())
+            pload, output_dir = create_ingestion_data(os.path.join(input_path,f'{uuid}.mp4'), output_path, interval)
+            st.session_state.context = json.loads(pload)
+        return True
 
     @staticmethod
     def generate_mcqs(session_id:str = '1'):
@@ -93,14 +129,21 @@ class MultiScreenApp:
         st.slider("Process every X seconds", 1, 10, 3, key="interval")
 
         if st.button("Submit"):
-            st.session_state.video_name = PlaceholderFunctions.process_video(
-                st.session_state.get("video_file"),
-                st.session_state.get("consider_audio"),
-                st.session_state.get("consider_video"),
-                st.session_state.get("interval")
-            )
-            st.session_state.screen = 2
-            st.rerun()
+            result = ()
+            with st.spinner("Processing video… Please do not refresh the page."):
+                st.info('This process can take upto 20min depending on the video length and your system performance.')
+                result = st.session_state.video_name = PlaceholderFunctions.process_video(
+                    st.session_state.get("video_file"),
+                    st.session_state.get("consider_audio"),
+                    st.session_state.get("consider_video"),
+                    st.session_state.get("interval")
+                )
+            if result[1]:
+                st.session_state.screen = 2
+                st.rerun()
+            else:
+                st.session_state = 1
+                st.rerun()
 
     def show_screen_2(self):
         st.title(f"Choose your preferred Agent for")
