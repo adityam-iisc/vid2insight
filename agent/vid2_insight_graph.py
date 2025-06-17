@@ -37,13 +37,14 @@ checkpointer = InMemorySaver()  # Uncomment if you want to use a checkpointer
 app = graph.compile(checkpointer=checkpointer)
 app.name = "vid2_insight_graph"
 # Uncomment the following lines to visualize the graph
-png_path = "//Users/kumarsa2/Desktop/Personal/vid2insight/agent/imgs/"
-app.get_graph().draw_mermaid_png(output_file_path=png_path + app.name + ".png", max_retries=5, retry_delay=2.0)
+# png_path = "//Users/kumarsa2/Desktop/Personal/vid2insight/agent/imgs/"
+# app.get_graph().draw_mermaid_png(output_file_path=png_path + app.name + ".png", max_retries=5, retry_delay=2.0)
+# OPENAI_API_KEY="<your-openai-api-key>"
 async def main():
     try:
         while True:
 
-            agent_choice = input("enter choice of agent chat, student_agent, doc_agent: ")  # Default to doc_chat
+            agent_choice = input("enter choice of agent :- chat, student_agent, doc_agent: ")  # Default to doc_chat
             intent = input("enter intent for the agent doc_chat, generate_exec_summary, generate_docs, doc_chat, generate_summary, generate_mcq: " )  # Default to doc_chat
             if agent_choice.lower() == 'exit':
                 break

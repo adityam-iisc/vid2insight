@@ -94,12 +94,14 @@ def generate_mcq(state: AgentState, *, config: RunnableConfig) -> dict[str, str]
         HumanMessage(
             content=f"Generate multiple-choice questions based on the provided transcript and on the following custom message {additional_messages}")
     ]
+
     mcq_doc = chat_model.invoke(messages)
 
     return {
         "mcq": mcq_doc.content,
         "answer": mcq_doc.content,
-        "messages": AIMessage(mcq_doc.content)
+        "messages": AIMessage(mcq_doc.content),
+        'generated_mcq': mcq_doc.content
     }
 
 
@@ -126,7 +128,8 @@ def generate_summary(state: AgentState, *, config: RunnableConfig) -> dict[str, 
     return {
         "summary": summary_plan.content,
         "answer": summary_plan.content,
-        "messages": AIMessage(summary_plan.content)
+        "messages": AIMessage(summary_plan.content),
+        'generated_summary': summary_plan.content
     }
 
 
@@ -173,16 +176,27 @@ def chat(state: AgentState, *, config: RunnableConfig) -> dict[str, BaseMessage 
     chat_model = configuration.get_model(configuration.default_llm_model)
     cleaned_transcript = state.video_context.replace("\n", "").replace(" ", "")
     cleaned_transcript = " ".join(cleaned_transcript.split())
-    messages = [
-                       SystemMessage(
-                           content=prompts.CHAT_SYSTEM_PROMPT.replace("{context}", cleaned_transcript)
-                       )
-                   ] + state.messages
+    context = None
+    if state.generated_mcq != '':
+        context = state.generated_mcq
+    elif state.generated_summary != '':
+        context = state.generated_summary
+    else:
+        context = cleaned_transcript
+    # messages = [
+    #                    SystemMessage(
+    #                        content=prompts.CHAT_SYSTEM_PROMPT.replace("{context}", cleaned_transcript)
+    #                    )
+    #                ] + state.messages
+    messages = [SystemMessage(content=prompts.CHAT_SYSTEM_PROMPT),
+                HumanMessage(content=context)
+                ] + state.messages
 
     response = chat_model.invoke(messages)
 
-    return {"messages": [response.content],
-            "answer": response.content
+    return {
+        "messages": response.content,
+         "answer": response.content
         }
 
 
@@ -209,7 +223,6 @@ def evaluate(state: AgentState, *, config: RunnableConfig) -> Dict[str, str | in
             "is_modification_required": response.is_modification_required,
             "feedback": response.feedback,
             "turn": state.turn + 1,
-            "answer": state.messages[-1],
             "messages": HumanMessage(f"feedback: {response.feedback}")
         }
     except Exception as exc:
