@@ -42,11 +42,12 @@ app.get_graph().draw_mermaid_png(output_file_path=png_path + app.name + ".png", 
 async def main():
     try:
         while True:
-            agent_choice = "doc_agent"  # Default to doc_chat
-            intent = "doc_chat"
+
+            agent_choice = input("enter choice of agent chat, student_agent, doc_agent: ")  # Default to doc_chat
+            intent = input("enter intent for the agent doc_chat, generate_exec_summary, generate_docs, doc_chat, generate_summary, generate_mcq: " )  # Default to doc_chat
             if agent_choice.lower() == 'exit':
                 break
-            message = "generate a prodfuct document for the video"
+            message = input("Enter your question: ")
             config = {"configurable": {"thread_id": "1", 'agent_choice': agent_choice}}
             context = raw_data.CUMULATIVE_SUMMARY
 
@@ -60,6 +61,10 @@ async def main():
             res = await app.ainvoke(payload, config)
             print('---------OUTPUT---------------\n')
             print(res)
+            print("-------------CHAT CONTENT---------------\n")
+            print(res['chat_content'])
+            print("--------------doc_content----------------\n")
+            print(res['doc_content'])
     except Exception as e:
         logger.exception(f"Exception in main: {e}", exc_info=True)
 

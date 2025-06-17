@@ -222,7 +222,8 @@ def chat(state: AgentState, *, config: RunnableConfig) -> Dict[str, Union[str, L
             """ + state.product_document
         else:
             context = state.video_context
-        messages = [SystemMessage(content=prompts.CHAT_SYSTEM_PROMPT.format(context=context))
+        messages = [SystemMessage(content=prompts.CHAT_SYSTEM_PROMPT.format(context=context)),
+                     HumanMessage(content=context)
                            ] + state.messages
         logger.debug(f"Messages for chat: {messages}")
         response = chat_model.invoke(messages)
