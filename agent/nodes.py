@@ -47,12 +47,12 @@ def student_subgraph(state: AgentState, *, config: RunnableConfig) -> Any:
     Returns:
         Any: The result of the student agent's subgraph.
     """
-    from agent.student_agent import student_graph
+    from agent.student_agent.student_graph import app
     try:
         logger.info("Invoking student_subgraph")
         # state_wo_choice = _remove_agent_choice(state)
         state_wo_choice = state
-        result = student_graph.invoke(state_wo_choice, config=config)
+        result = app.invoke(state_wo_choice, config=config)
         logger.info("student_subgraph executed successfully")
         return result
     except Exception as e:

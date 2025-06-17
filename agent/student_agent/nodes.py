@@ -173,16 +173,12 @@ def chat(state: AgentState, *, config: RunnableConfig) -> dict[str, BaseMessage 
     chat_model = configuration.get_model(configuration.default_llm_model)
     cleaned_transcript = state.video_context.replace("\n", "").replace(" ", "")
     cleaned_transcript = " ".join(cleaned_transcript.split())
-    if len(state.messages) == 1:
-        messages = [
+    messages = [
                        SystemMessage(
                            content=prompts.CHAT_SYSTEM_PROMPT.replace("{context}", cleaned_transcript)
                        )
                    ] + state.messages
-    else:
-        messages = [
-            state.messages
-        ]
+
     response = chat_model.invoke(messages)
 
     return {"messages": [response.content],
