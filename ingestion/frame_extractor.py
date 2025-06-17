@@ -8,7 +8,7 @@ from scenedetect import SceneManager, open_video
 from scenedetect.detectors import ContentDetector
 from typing import List
 from PIL import Image
-from agent.doc_agent.initialize_logger import logger
+from agent.config.initialize_logger import logger
 
 
 def is_hash_unique(seen_hashes, new_hash, tolerance=5) -> bool:

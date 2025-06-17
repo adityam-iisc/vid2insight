@@ -8,5 +8,9 @@ class OutputState(InputState):
     """Represents the output state for the agent."""
 
     answer: str = field(default="")
-    transcript: list[str] = field(default_factory=list)
+
+    chat_content : str= field(default="")
+
+    doc_content: str = field(default="")
+
     """Final answer"""
