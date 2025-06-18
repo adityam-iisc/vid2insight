@@ -1,6 +1,6 @@
-# Text Quality Evaluation Toolkit
+# Text Score Evaluation Toolkit
 
-A comprehensive toolkit for evaluating the quality of generated text through various metrics, including both automated metrics and LLM-based evaluation.
+A comprehensive code for evaluating the quality of generated text through various metrics, including both automated metrics and LLM-based evaluation.
 
 ## Features
 
@@ -9,11 +9,6 @@ A comprehensive toolkit for evaluating the quality of generated text through var
   - **BLEU Score**: Measures n-gram overlap between generated text and reference
   - **ROUGE Score**: Evaluates recall and precision of n-grams
   - **LLM-based Evaluation**: Uses a large language model as judge to evaluate various aspects of text quality
-
-- **Robust Implementation**:
-  - Well-organized modular code structure
-  - Proper error handling and logging
-  - Configurable settings through configuration files
 
 ## Getting Started
 
@@ -74,7 +69,7 @@ vid2insight/
 
 ### Command Line Interface
 
-The toolkit provides a simple command line interface. You can use either the wrapper script in the project root or run the evaluation script directly from the eval folder:
+The code provides a simple command line interface. You can use either the wrapper script in the project root or run the evaluation script directly from the eval folder:
 
 #### Run a specific evaluation:
 
