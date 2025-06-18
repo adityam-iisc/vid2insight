@@ -8,7 +8,7 @@ from typing import Dict, List, Union
 from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage,AIMessage
 from langchain_core.runnables import RunnableConfig
 
-import raw_data
+# import raw_data
 from agent.config.assistant_config import AssistantConfiguration
 from agent.config.initialize_logger import logger
 from agent.doc_agent import prompts, constants

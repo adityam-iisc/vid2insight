@@ -27,8 +27,7 @@ def agent_router(state: AgentState, *, config: RunnableConfig) -> dict[str, str]
     """
 
     try:
-        return config['metadata']['agent_choice']
-        agent_choice = state.agent_choice
+        agent_choice = config.get('configurable', {}).get('agent_choice', None)
         if agent_choice not in [e.value for e in AgentType]:
             logger.error(f"Invalid agent_choice: {agent_choice}")
             raise ValueError(f"Invalid agent_choice: {agent_choice}")

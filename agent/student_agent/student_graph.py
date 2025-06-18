@@ -2,7 +2,7 @@ import asyncio
 
 from langgraph.graph import StateGraph,START, END
 
-import raw_data
+# import raw_data
 from agent.config.assistant_config import AssistantConfiguration
 from agent.student_agent.states.agent_state import AgentState
 from agent.student_agent import nodes, constants
@@ -54,24 +54,24 @@ app.name = "student_agent"
 
 # png_path="/Users/admukhop/Desktop/iisc/Deep Learning/project/vid2insight/agent/imgs/"
 # app.get_graph().draw_mermaid_png(output_file_path=png_path+app.name+".png",max_retries=5, retry_delay=2.0, draw_method=MermaidDrawMethod.PYPPETEER)
-async def main():
-    try:
-       while True:
-           #generate_exec_summary
-           intent = input("Enter intent (generate_mcq, generate_summary, doc_chat) or 'exit' to quit: ")
-           message = input("Enter message: ")
-           config = {"configurable": {"thread_id": "1", "user_id": "kumarsa2", 'intent': intent,
-                                      'file_path': '/Users/kumarsa2/Downloads/abc.mp4'}}
-           context = raw_data.frame_transcript
-
-           payload = {"messages": [{"role": "human", "content": message}], 'intent': intent, 'video_context': context}
-           res = await app.ainvoke(payload, config)
-           print('---------OUTPUT---------------\n')
-           print(res['answer'])
-
-    except Exception as e:
-        logger.error("An error occurred while invoking ainvoke:", exc_info=True)
-# # Run the async main function
-if __name__ == "__main__":
-    asyncio.run(main())
-    pass
+# async def main():
+#     try:
+#        while True:
+#            #generate_exec_summary
+#            intent = input("Enter intent (generate_mcq, generate_summary, doc_chat) or 'exit' to quit: ")
+#            message = input("Enter message: ")
+#            config = {"configurable": {"thread_id": "1", "user_id": "kumarsa2", 'intent': intent,
+#                                       'file_path': '/Users/kumarsa2/Downloads/abc.mp4'}}
+#            context = raw_data.frame_transcript
+#
+#            payload = {"messages": [{"role": "human", "content": message}], 'intent': intent, 'video_context': context}
+#            res = await app.ainvoke(payload, config)
+#            print('---------OUTPUT---------------\n')
+#            print(res['answer'])
+#
+#     except Exception as e:
+#         logger.error("An error occurred while invoking ainvoke:", exc_info=True)
+# # # Run the async main function
+# if __name__ == "__main__":
+#     asyncio.run(main())
+#     pass

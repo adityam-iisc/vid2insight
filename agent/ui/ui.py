@@ -4,14 +4,16 @@ import streamlit as st
 import os
 import asyncio
 import json
-from agent.student_agent.student_graph import app as student_app
-from streamlit.runtime import get_instance
+from agent.vid2_insight_graph import app
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 from ingestion.combined_text_transcriptor import create_ingestion_data
+from agent.student_agent.constants import Intent as StudIntent
+from agent.doc_agent.constants import Intent as DocIntent
+from agent.constants import AgentType
 
 
 
-class PlaceholderFunctions:
+class Facilitator:
 
     @staticmethod
     def compute_video_id(video_hash: str, length: int) -> str:
@@ -34,7 +36,7 @@ class PlaceholderFunctions:
 
     @staticmethod
     def process_video(video_input, consider_audio, consider_video, interval):
-        uuid = PlaceholderFunctions.compute_video_id(
+        uuid = Facilitator.compute_video_id(
             hashlib.sha256(video_input.read()).hexdigest(),
             video_input.size
         )
@@ -57,54 +59,89 @@ class PlaceholderFunctions:
 
     @staticmethod
     def generate_mcqs(session_id:str = '1'):
-        # invoke student_agent graph for MCQ
-        video_path = st.session_state.get("video_name")
-        config = {
-            "configurable": {
-                "thread_id": session_id,
-                "user_id": "streamlit_user",
-                "intent": "generate_mcq",
-                "file_path": video_path
-            }
+        config = {"configurable": {"thread_id": session_id, 'agent_choice': AgentType.student_agent.value}}
+        payload = {
+            "messages": [{"role": "human", "content": 'generate a set of mcq questions covering all key concepts for the video content.'}],
+            'expert_preference': AgentType.student_agent.value,
+            'video_context': st.session_state.context['combined_transcript'][0]['combined_transcript'],
+            'intent': StudIntent.GENERATE_MCQ.value,
         }
-        input_data = {
-            "messages": [
-                {"role": "human", "content": "Generate multiple-choice questions for the provided video."}
-            ]
-        }
-        raw = asyncio.run(student_app.ainvoke(input_data, config))
-        # raw['mcq'] is a JSON string; parse it into a dict and return
-        mcq_json = json.loads(raw['answer'].content.replace("```json", "").replace("```", ""))
-        return mcq_json
+        raw = asyncio.run(app.ainvoke(payload, config))
+        return json.loads(raw['answer'].replace('```json','').replace('```',''))
 
     @staticmethod
-    def generate_study_summary(session_id:str = '1'):
+    def generate_study_summary(session_id:str = '1') -> tuple[str, str]:
         # invoke student_agent graph for Summary
-        video_path = st.session_state.get("video_name")
-        config = {
-            "configurable": {
-                "thread_id": session_id,
-                "user_id": "streamlit_user",
-                "intent": "generate_summary",
-                "file_path": video_path
-            }
+        config = {"configurable": {"thread_id": session_id, 'agent_choice': AgentType.student_agent.value}}
+        payload = {
+            "messages": [{"role": "human", "content": 'generate a comprehensive study summary for the video content.'}],
+            'expert_preference': AgentType.student_agent.value,
+            'video_context': st.session_state.context['combined_transcript'][0]['combined_transcript'],
+            'intent': StudIntent.GENERATE_SUMMARY.value
         }
-        input_data = {
-            "messages": [
-                {"role": "human", "content": "Generate a student-focused summary for the provided video."}
-            ]
-        }
-        raw = asyncio.run(student_app.ainvoke(input_data, config))
-        # parse the JSON string response
-        return json.loads(raw['answer'].content.replace("```json", "").replace("```", ""))
+        raw = asyncio.run(app.ainvoke(payload, config))
+        return json.loads(raw['answer'].replace('```json','').replace('```',''))
 
+    @staticmethod
+    def send_chat_studentG(session_id: str, results: list[dict], chat_input: str):
+        """
+        Send the MCQ evaluation results (correct/incorrect per question) back to the app.
+        """
+        if chat_input.strip() == '':
+            st.warning("Please enter a message to send.")
+            return '', ''
+        config = {"configurable": {"thread_id": session_id, 'agent_choice': AgentType.student_agent.value}}
+        messages = f"Answer my query: {chat_input}" + (f"And some additional context if necessary: {json.dumps(results)}" if results else '')
+        payload = {
+            "messages": [{"role": "human", "content": messages}],
+            'expert_preference': AgentType.student_agent.value,
+            'video_context': st.session_state.context['combined_transcript'][0]['combined_transcript'],
+            'intent': StudIntent.DOC_CHAT.value,
+        }
+        raw = asyncio.run(app.ainvoke(payload, config))
+        return raw['chat_content'], raw['doc_content']
+
+    @staticmethod
+    def generate_product_doc(session_id: str = 1, doc_choice: str = "Product Doc") -> str:
+        """
+        Generate a product document based on the selected mode and video.
+        """
+        intent = DocIntent.GENERATE_DOCS.value if doc_choice == "Product Doc" else DocIntent.GENERATE_EXEC_SUMMARY.value
+
+        config = {"configurable": {"thread_id": session_id, 'agent_choice': AgentType.doc_agent.value}}
+        payload = {
+            "messages": [{"role": "human", "content": 'generate a product documentation for the video content.'}],
+            'expert_preference': AgentType.doc_agent.value,
+            'video_context': st.session_state.context['combined_transcript'][0]['combined_transcript'],
+            'intent': DocIntent.GENERATE_DOCS.value
+        }
+        raw = asyncio.run(app.ainvoke(payload, config))
+        return raw['answer']
+
+    @staticmethod
+    def send_chat_docG(session_id: str = 1, results: str= '', chat_input: str = '') -> str:
+        """
+        Generate a product document based on the selected mode and video.
+        """
+        if not chat_input:
+            return '', ''
+        config = {"configurable": {"thread_id": session_id, 'agent_choice': AgentType.doc_agent.value}}
+        messages = f"Answer my query: {chat_input}" + (
+            f"with reference to my current version of document: {results}" if results else '')
+        payload = {
+            "messages": [{"role": "human", "content": messages}],
+            'expert_preference': AgentType.doc_agent.value,
+            'video_context': st.session_state.context['combined_transcript'][0]['combined_transcript'],
+            'intent': DocIntent.DOC_CHAT.value,
+        }
+        raw = asyncio.run(app.ainvoke(payload, config))
+        return raw['chat_content'], raw['doc_content']
 
 class MultiScreenApp:
     def __init__(self):
         self.screen = st.session_state.get("screen", 1)
-        runtime = get_instance()
         st.session_state.session_id = get_script_run_ctx().session_id
-
+        st.set_page_config(page_title="Video Insight App", layout="wide")
 
     def run(self):
         if self.screen == 1:
@@ -126,19 +163,19 @@ class MultiScreenApp:
 
         st.checkbox("Consider Audio", value=True, key="consider_audio")
         st.checkbox("Consider Video", value=True, key="consider_video")
-        st.slider("Process every X seconds", 1, 10, 3, key="interval")
+        st.slider("Process every X seconds", 1, 60, 15, key="interval")
 
         if st.button("Submit"):
             result = ()
             with st.spinner("Processing video… Please do not refresh the page."):
                 st.info('This process can take upto 20min depending on the video length and your system performance.')
-                result = st.session_state.video_name = PlaceholderFunctions.process_video(
+                result = st.session_state.video_name = Facilitator.process_video(
                     st.session_state.get("video_file"),
                     st.session_state.get("consider_audio"),
                     st.session_state.get("consider_video"),
                     st.session_state.get("interval")
                 )
-            if result[1]:
+            if result:
                 st.session_state.screen = 2
                 st.rerun()
             else:
@@ -168,30 +205,60 @@ class MultiScreenApp:
 
     def show_screen_3(self):
         st.title("Product Document Generator")
-        st.video(st.session_state.get("video_name", ""))
-
-        st.radio("Choose your desired output format: ", ["Product Doc", "Executive Summary"], key="doc_choice")
+        specialist = st.radio("Choose your desired output format: ", ["Product Doc", "Executive Summary"], key="doc_choice", horizontal=True)
 
         col_response, col_chat = st.columns([5, 2])
         with col_response:
             st.subheader("Generated Response (Editable)")
-            st.session_state.output = st.text_area("Edit your response:", value=st.session_state.get("output", ""), height=400)
-
+            if specialist == "Product Doc":
+                st.session_state.output = Facilitator.generate_product_doc(st.session_state.session_id, doc_choice=specialist)
+            else:
+                st.session_state.output = Facilitator.generate_product_doc(st.session_state.session_id,
+                                                                           doc_choice=specialist)
+            st.session_state.output = st.text_area("Edit your response:", value=st.session_state.get("output", ""),
+                                                       height=400)
         with col_chat:
             st.subheader("Chat Interface")
-            chat_input = st.text_area("Type your message", key="chat_input")
+            for turn in st.session_state.get("chat_history", []):
+                st.chat_message(turn["role"]).write(turn["content"])
+
+            chat_input = st.text_area(
+                "Type your message",
+                key="chat_input",
+                height=80
+            )
             if st.button("Send", key="chat_send"):
-                st.session_state.chat_history = st.session_state.get("chat_history", []) + [chat_input]
-            for msg in reversed(st.session_state.get("chat_history", [])):
-                st.markdown(f"**You:** {msg}")
+                if not chat_input.strip():
+                    st.warning("Please enter a message to send.")
+                else:
+                    response, output = Facilitator.send_chat_docG(
+                        session_id=st.session_state.session_id,
+                        results=st.session_state.output,
+                        chat_input=chat_input
+                    )
+                    st.session_state.output = output
+                    st.session_state.chat_history = (
+                            st.session_state.get("chat_history", []) +
+                            [
+                                {"role": "user", "content": chat_input},
+                                {"role": "assistant", "content": response}
+                            ]
+                    )
+                    st.rerun()
 
         col1, col2, col3 = st.columns([1, 1, 1])
         with col1:
             if st.button("Submit"):
-                st.session_state.output = f"Processed output for: {st.session_state.get('doc_choice')}"
+                st.session_state.output = (
+                    f"Processed output for: {st.session_state.get('doc_choice')}"
+                )
                 st.rerun()
         with col2:
-            st.download_button("Download as Markdown", st.session_state.output, "output.md")
+            st.download_button(
+                "Download as Markdown",
+                st.session_state.output,
+                "output.md"
+            )
         with col3:
             if st.button("Reset"):
                 st.session_state.output = ""
@@ -207,7 +274,7 @@ class MultiScreenApp:
         with col_left:
             if tutor_mode == "Generate MCQ":
                 if "mcq_data" not in st.session_state:
-                    st.session_state.mcq_data = PlaceholderFunctions.generate_mcqs(st.session_state.get("thread_id", "1"))
+                    st.session_state.mcq_data = Facilitator.generate_mcqs(st.session_state.session_id)
                     st.session_state.mcq_answers = {}
                     st.session_state.mcq_evaluated = False
 
@@ -235,11 +302,19 @@ class MultiScreenApp:
 
                 if not st.session_state.mcq_evaluated:
                     if st.button("Evaluate"):
+                        # mark evaluated
                         st.session_state.mcq_evaluated = True
+                        # compile first-try results list
+                        results = []
+                        for i, q in enumerate(st.session_state.mcq_data["questions"]):
+                            sel_idx = st.session_state.mcq_answers.get(i)
+                            is_correct = (q["options"][sel_idx] == q["correct_option"])
+                            results.append({"question_index": i, "correct": is_correct})
+                        st.session_state.mcq_eval = results
                         st.rerun()
             else:  # Summary
                 if "summary_data" not in st.session_state:
-                    st.session_state.summary_data = PlaceholderFunctions.generate_study_summary(st.session_state.get("thread_id", "1"))
+                    st.session_state.summary_data = Facilitator.generate_study_summary(st.session_state.session_id)
 
                 data = st.session_state.summary_data
                 # Topics
@@ -267,18 +342,37 @@ class MultiScreenApp:
                         st.markdown(f"- {prereq}")
         with col_right:
             st.subheader("Chat Interface")
-            chat_input = st.text_area("Message", key="tutor_chat_input")
+            chat_input = st.text_area("Message", key="tutor_chat_input", placeholder=st.session_state.get("chat_input", "Type your message here..."))
+            additional_info = st.session_state.get('mcq_eval', []) if tutor_mode == "Generate MCQ" else json.dumps(st.session_state.get('summary_data', {}))
             if st.button("Send", key="tutor_chat_send"):
-                st.session_state.tutor_chat_history = st.session_state.get("tutor_chat_history", []) + [chat_input]
-            for msg in reversed(st.session_state.get("tutor_chat_history", [])):
-                st.markdown(f"**You:** {msg}")
-
+                response, mcq_questions = Facilitator.send_chat_studentG(session_id=st.session_state.session_id, results= additional_info, chat_input=chat_input)
+                if st.session_state.get("tutor_chat_history"):
+                    st.session_state.tutor_chat_history.extend([
+                        {"role": "user", "content": chat_input},
+                        {"role": "assistant", "content": response}
+                    ])
+                else:
+                    st.session_state.tutor_chat_history = [
+                        {"role": "user", "content": chat_input},
+                        {"role": "assistant", "content": response}
+                    ]
+                if tutor_mode == "Generate MCQ" and mcq_questions:
+                    st.session_state.mcq_data = mcq_questions
+                    st.session_state.mcq_answers = {}
+                    st.session_state.mcq_evaluated = False
+                st.session_state.chat_input = ""  # clear input
+            for turn in st.session_state.tutor_chat_history:
+                st.chat_message(turn["role"]).write(turn["content"])
         col1, col2 = st.columns([1, 1])
         with col1:
             if st.button("Submit", key="tutor_submit"):
                 st.rerun()
         with col2:
             if st.button("Reset", key="tutor_reset"):
+                st.session_state.mcq_data = []
+                st.session_state.mcq_answers = {}
+                st.session_state.mcq_evaluated = False
+                st.session_state.summary_data = []
                 st.session_state.screen = 2
                 st.rerun()
 
