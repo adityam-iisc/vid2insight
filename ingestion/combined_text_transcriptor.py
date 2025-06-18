@@ -113,7 +113,8 @@ def extract_segments(video_path: str, output_dir: str, segment_duration: int):
         input_path=video_path,
         output_path=audio_output_dir,
         interval_s=segment_duration,
-        persist=True
+        persist=True,
+        ffmpeg_path=None
     )
     audio_chunks = aob.extractor()
 

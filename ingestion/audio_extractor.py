@@ -7,7 +7,6 @@ import shutil
 
 from pydub import AudioSegment
 import imageio_ffmpeg
-AudioSegment.converter = imageio_ffmpeg.get_ffmpeg_exe()
 from agent.config.initialize_logger import logger
 
 
@@ -15,24 +14,28 @@ class VideoAudioProcessor:
     """
     Processor to extract the primary audio track from a video file (and or persist/chunk it).
     """
-    def __init__(self, input_path: str, output_path: str, interval_s: int = -1, ffmpeg_path: str = "ffmpeg", persist: bool = False):
+    def __init__(self, input_path: str, output_path: str, interval_s: int = -1, ffmpeg_path: str = None, persist: bool = False):
         """
         Initializes the VideoAudioProcessor with the given parameters.
         :param input_path: Input video file path, must end with the filename
         :param output_path: Output audio file path, must end with the filename and extension (e.g., abc.wav)
         :param interval_s: If you wish to retrieve the audio in chunks, specify the interval in seconds. (default: -1)
-        :param ffmpeg_path: Specify the path to the ffmpeg executable. (default: "ffmpeg")
+        :param ffmpeg_path: Specify the path to the ffmpeg executable. (default: None, uses imageio_ffmpeg)
         :param persist: If you wish to persist the audio in your disk, set this to True. (default: False)
         """
-        self.ffmpeg_path = ffmpeg_path
+        import imageio_ffmpeg
+        if ffmpeg_path is None:
+            self.ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
+        else:
+            self.ffmpeg_path = ffmpeg_path
+            if shutil.which(self.ffmpeg_path) is None:
+                raise EnvironmentError(f"ffmpeg not found at path '{self.ffmpeg_path}'. Please install ffmpeg\nIf using macos use brew install ffmpeg.\nFor other platforms, please clone the repo")
         self.input_path = input_path
         self.output_path = os.path.join(output_path, 'total_audio.wav')
         self.interval_s = interval_s
         self.sample_rate = 16000
         self.channels = 1  # Mono audio, ultimately converted to by Gemini
         self.persist = persist
-        if shutil.which(self.ffmpeg_path) is None:
-            raise EnvironmentError(f"ffmpeg not found at path '{self.ffmpeg_path}'. Please install ffmpeg\nIf using macos use brew install ffmpeg.\nFor other platforms, please clone the repo")
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def _run_ffmpeg_command(self, cmd: list) -> None:

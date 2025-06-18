@@ -90,7 +90,8 @@ def extract_segments(video_path: str, path_to_folder: str, video_id: str):
         input_path=video_path,
         output_path=f"../docs/{video_id}/audio_segments/audio_output.wav",
         interval_s=30,
-        persist=True
+        persist=True,
+        ffmpeg_path=None
     )
     audio_chunks = aob.extractor()
 def read_segments_from_folder(path_to_folder):
