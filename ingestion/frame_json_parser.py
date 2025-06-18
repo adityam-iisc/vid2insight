@@ -12,7 +12,7 @@ class FrameJsonOutputParser(BaseOutputParser):
     Parses JSON output from LLM after removing markdown code fences or leading 'json' tags.
     """
 
-    def parse(self, text: str) -> List[Dict]:
+    def parse(self, text: str, bypass: bool = False) -> List[Dict] | str:
         # Remove triple backtick blocks or leading 'json'
         cleaned_text = text.strip()
 
@@ -26,6 +26,11 @@ class FrameJsonOutputParser(BaseOutputParser):
         cleaned_text = re.sub(r'\\_', '_', cleaned_text)
         try:
             cleaned_text = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', cleaned_text)
+            # remove only commas immediately before a closing ] or }
+            cleaned_text = re.sub(r",\s*(?=[\]\}])", "", cleaned_text)
+
+            if bypass:
+                return cleaned_text
         except re.error as e:
             logger.error(f"Regex error while cleaning text: {e}")
         parsed = {}

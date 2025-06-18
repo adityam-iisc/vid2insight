@@ -65,7 +65,6 @@ def generate_transcript(video_path: str, output_dir: str, segment_duration: int)
                 segment_transcripts.get(segment_id)['frame_transcript'] = {'title': [frame_seg['title']],
                                                                            'details': [frame_seg['explanation']]}
 
-            segment_transcripts[segment_id]["frame_transcript"].append(frame_seg)
         logger.info("Segment processing completed")
 
         # Call LLM to combine audio and frame transcripts

@@ -116,7 +116,7 @@ def get_llm_response(req_parts: List[Dict[str, str]], chat_model: BaseChatModel)
     # Use the parser
     parser = FrameJsonOutputParser()
 
-    parsed_output = parser.parse(frame_transcript.content)
+    parsed_output = parser.parse(frame_transcript.content, bypass=True)
 
     return parsed_output
 

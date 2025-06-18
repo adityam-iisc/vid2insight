@@ -44,7 +44,7 @@ class Facilitator:
         input_path = '../docs/input'
         output_path = os.path.join('../docs/', uuid)
         if video_input is not None:
-            if os.path.exists(os.path.join(input_path, f'{uuid}.mp4')):
+            if os.path.exists(os.path.join(output_path, 'transcript.json')):
                 st.info('Video already processed. Loading existing data...')
                 transcript = json.load(open(os.path.join(output_path, 'transcript.json')))
                 st.session_state.context = transcript
@@ -137,6 +137,23 @@ class Facilitator:
         raw = asyncio.run(app.ainvoke(payload, config))
         return raw['chat_content'], raw['doc_content']
 
+    def send_gen_chat(session_id: str = 1, chat_input: str = '') -> str:
+        """
+        Send a chat message to the general chat agent.
+        """
+        if not chat_input:
+            return ''
+        config = {"configurable": {"thread_id": session_id, 'agent_choice': AgentType.chat.value}}
+        payload = {
+            "messages": [{"role": "human", "content": chat_input}],
+            'expert_preference': AgentType.chat.value,
+            'video_context': st.session_state.context['combined_transcript'][0]['combined_transcript'],
+            'intent': DocIntent.DOC_CHAT.value,
+        }
+        raw = asyncio.run(app.ainvoke(payload, config))
+        return raw['chat_content']
+
+
 class MultiScreenApp:
     def __init__(self):
         self.screen = st.session_state.get("screen", 1)
@@ -153,7 +170,7 @@ class MultiScreenApp:
         elif self.screen == 4:
             self.show_screen_4()
         elif self.screen == 5:
-            st.write("This is the fifth screen, which is currently not implemented.")
+            self.show_screen_5()
 
     def show_screen_1(self):
         st.title("Upload or Link a Video")
@@ -192,6 +209,8 @@ class MultiScreenApp:
             if st.button("Submit"):
                 if option == "Student Tutor":
                     st.session_state.screen = 4
+                elif option == "Simple Chat":
+                    st.session_state.screen = 5
                 else:
                     st.session_state.screen = 3
                 st.session_state.selected_mode = option
@@ -209,14 +228,25 @@ class MultiScreenApp:
 
         col_response, col_chat = st.columns([5, 2])
         with col_response:
-            st.subheader("Generated Response (Editable)")
-            if specialist == "Product Doc":
-                st.session_state.output = Facilitator.generate_product_doc(st.session_state.session_id, doc_choice=specialist)
+            editable = st.checkbox("Enable editing", value=True, key="output_editable")
+            st.subheader(f"Generated Response" + (f" (Editable)" if editable else ""))
+            if st.session_state.get("last_specialist",'') != specialist:
+                response = Facilitator.generate_product_doc(st.session_state.session_id, doc_choice=specialist)
+
+            if "output" not in st.session_state or st.session_state.get("last_specialist") != specialist:
+                st.session_state.output = response
+                st.session_state.last_specialist = specialist
+            # st.session_state.output = st.text_area("Edit your response:", value=st.session_state.get("output", ""),
+            #                                            height=400)
+            if editable:
+                st.session_state.output = st.text_area(
+                    "Edit your response:",
+                    value=st.session_state.output,
+                    height=400,
+                    key="output_textarea"
+                )
             else:
-                st.session_state.output = Facilitator.generate_product_doc(st.session_state.session_id,
-                                                                           doc_choice=specialist)
-            st.session_state.output = st.text_area("Edit your response:", value=st.session_state.get("output", ""),
-                                                       height=400)
+                st.markdown(st.session_state.output)
         with col_chat:
             st.subheader("Chat Interface")
             for turn in st.session_state.get("chat_history", []):
@@ -264,6 +294,7 @@ class MultiScreenApp:
                 st.session_state.output = ""
                 st.session_state.chat_history = []
                 st.session_state.screen = 2
+                st.session_state.last_specialist = ''
                 st.rerun()
 
     def show_screen_4(self):
@@ -346,7 +377,7 @@ class MultiScreenApp:
             additional_info = st.session_state.get('mcq_eval', []) if tutor_mode == "Generate MCQ" else json.dumps(st.session_state.get('summary_data', {}))
             if st.button("Send", key="tutor_chat_send"):
                 response, mcq_questions = Facilitator.send_chat_studentG(session_id=st.session_state.session_id, results= additional_info, chat_input=chat_input)
-                if st.session_state.get("tutor_chat_history"):
+                if st.session_state.get("tutor_chat_history", []):
                     st.session_state.tutor_chat_history.extend([
                         {"role": "user", "content": chat_input},
                         {"role": "assistant", "content": response}
@@ -361,7 +392,7 @@ class MultiScreenApp:
                     st.session_state.mcq_answers = {}
                     st.session_state.mcq_evaluated = False
                 st.session_state.chat_input = ""  # clear input
-            for turn in st.session_state.tutor_chat_history:
+            for turn in st.session_state.get('tutor_chat_history', []):
                 st.chat_message(turn["role"]).write(turn["content"])
         col1, col2 = st.columns([1, 1])
         with col1:
@@ -377,15 +408,39 @@ class MultiScreenApp:
                 st.rerun()
 
     def show_screen_5(self):
-        st.title("Screen 5")
-        st.write("This is the fifth screen, which is currently not implemented.")
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            if st.button("Submit", key="tutor_submit"):
-                st.rerun()
-        with col2:
-            if st.button("Reset", key="tutor_reset"):
-                st.session_state.screen = 2
+        st.title("Chat")
+
+        # Chat history window
+        for turn in st.session_state.get("screen5_chat_history", []):
+            st.chat_message(turn["role"]).write(turn["content"])
+
+        # Input box at bottom
+        chat_input = st.text_area(
+            "Message",
+            key="screen5_chat_input",
+            placeholder="Type your message here...",
+            height=80
+        )
+
+        send_col, reset_col = st.columns([1, 1])
+        with send_col:
+            if st.button("Send", key="screen5_send"):
+                if chat_input.strip():
+                    history = st.session_state.get("screen5_chat_history", [])
+
+                    history.append({"role": "user", "content": chat_input})
+
+                    response = Facilitator.send_gen_chat(
+                        session_id=st.session_state.session_id,
+                        chat_input=chat_input
+                    )
+                    history.append({"role": "assistant", "content": response})
+
+                    st.session_state.screen5_chat_history = history
+                    st.rerun()
+        with reset_col:
+            if st.button("Reset", key="screen5_reset"):
+                st.session_state.screen5_chat_history = []
                 st.rerun()
 
 

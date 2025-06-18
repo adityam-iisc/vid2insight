@@ -1,4 +1,3 @@
-
 FRAME_EXTRACT_PROMPT = """
         You are a technical expert and presenter.
 
@@ -6,9 +5,11 @@ FRAME_EXTRACT_PROMPT = """
         1. Generate a **transcript** that explains the image in a clear, concise manner.
         2. Extract the **raw text exactly as it appears in the image**, preserving formatting, labels, and code blocks.
         3. Extract and explain the key technical content (e.g., diagrams, code, architecture, tables, flowcharts).
-        4. Be very thorough in your explanations and ensure that the transcript reads naturally as if a presenter is explaining the slide in a talk.
-        5. Donot add any additional information than what is present in the image.
-        6. Donot add any content that is not utf-8 supported like illegal endline characters, emojis etc..
+        4. If there are double quotes in the image, add a backward slash before them for example \"text\".
+        5. Be very thorough in your explanations and ensure that the transcript reads naturally as if a presenter is explaining the slide in a talk.
+        6. Donot add any additional information than what is present in the image.
+        7. Donot add any content that is not utf-8 supported like illegal endline characters, emojis etc..
+        8. Donot add any other keys apart from the three keys mentioned in the sample output below.
 
 
         Please return the output in the following **valid JSON format**:
@@ -82,7 +83,7 @@ Your task is to:
 
 """
 
-FINAL_PROMPT= """
+FINAL_PROMPT = """
 You will be given one audio segment and multiple images.
 
 Each image and the audio segment are related and should be treated as part of the same scene or explanation.
