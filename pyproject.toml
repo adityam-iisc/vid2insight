@@ -22,7 +22,8 @@ dependencies = [
     "audioop-lts (>=0.2.1,<0.3.0)",
     "opencv-python (>=4.11.0.86,<5.0.0.0)",
     "imagehash (>=4.3.2,<5.0.0)",
-    "scenedetect (>=0.6.6,<0.7.0)"
+    "scenedetect (>=0.6.6,<0.7.0)",
+    "imageio-ffmpeg (>=0.6.0,<0.7.0)"
 ]
 
 

@@ -6,6 +6,8 @@ import logging
 import shutil
 
 from pydub import AudioSegment
+import imageio_ffmpeg
+AudioSegment.converter = imageio_ffmpeg.get_ffmpeg_exe()
 from agent.config.initialize_logger import logger
 
 
