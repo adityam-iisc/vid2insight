@@ -75,7 +75,7 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
         audio_base64 = audio_segments.get(audio_f_name, '')
         req_parts.append(audio_base64)
         req_output = get_llm_response(req_parts, chat_model)
-        # time.sleep(6)  # Sleep to avoid rate limiting issues with the LLM
+       #  time.sleep(6)  # Sleep to avoid rate limiting issues with the LLM
         req_output_list.append(req_output)
         req_parts = [prompts.AUDIO_EXTRACT_PROMPT]
     return req_output_list
