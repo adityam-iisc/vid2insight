@@ -117,13 +117,13 @@ class Facilitator:
             "messages": [{"role": "human", "content": 'generate a product documentation for the video content.'}],
             'expert_preference': AgentType.doc_agent.value,
             'video_context': st.session_state.context['combined_transcript'][0]['combined_transcript'],
-            'intent': DocIntent.GENERATE_DOCS.value
+            'intent': intent
         }
         raw = asyncio.run(app.ainvoke(payload, config))
         return raw['chat_content'], raw['doc_content']
 
     @staticmethod
-    def send_chat_docG(session_id: str = 1, results: str= '', chat_input: str = '') -> str:
+    def send_chat_docG(session_id: str = 1, results: str= '', chat_input: str = '') -> tuple[str, str]:
         """
         Generate a product document based on the selected mode and video.
         """
@@ -180,7 +180,7 @@ class MultiScreenApp:
         st.title("Upload or Link a Video")
 
         st.file_uploader("Upload a video file", type=["mp4", "mov", "avi"], key="video_file")
-        st.text_input("Or enter YouTube link", key="youtube_link")
+        st.text_input("Or enter YouTube link", key="youtube_link", disabled= True, placeholder="we will be back soon...")
 
         st.checkbox("Consider Audio", value=True, key="consider_audio")
         st.checkbox("Consider Video", value=True, key="consider_video")
@@ -235,10 +235,10 @@ class MultiScreenApp:
             editable = st.checkbox("Enable editing", value=True, key="output_editable")
             st.subheader(f"Generated Response" + (f" (Editable)" if editable else ""))
             if st.session_state.get("last_specialist",'') != specialist:
-                response = Facilitator.generate_product_doc(st.session_state.session_id, doc_choice=specialist)
+                response, output = Facilitator.generate_product_doc(st.session_state.session_id, doc_choice=specialist)
 
             if "output" not in st.session_state or st.session_state.get("last_specialist") != specialist:
-                st.session_state.output = response
+                st.session_state.output = output
                 st.session_state.last_specialist = specialist
             # st.session_state.output = st.text_area("Edit your response:", value=st.session_state.get("output", ""),
             #                                            height=400)
