@@ -114,7 +114,7 @@ class Facilitator:
 
         config = {"configurable": {"thread_id": session_id, 'agent_choice': AgentType.doc_agent.value}}
         payload = {
-            "messages": [{"role": "human", "content": 'generate a product documentation for the video content.'}],
+            "messages": [{"role": "human", "content": f'generate a {doc_choice} for the video content.'}],
             'expert_preference': AgentType.doc_agent.value,
             'video_context': st.session_state.context['combined_transcript'][0]['combined_transcript'],
             'intent': intent
@@ -155,7 +155,7 @@ class Facilitator:
             'intent': DocIntent.DOC_CHAT.value,
         }
         raw = asyncio.run(app.ainvoke(payload, config))
-        return raw['chat_content']
+        return raw['chat_content'] + '\n\n' +(raw['doc_content'] if raw.get('doc_content') else '')
 
 
 class MultiScreenApp:
@@ -234,7 +234,7 @@ class MultiScreenApp:
         with col_response:
             editable = st.checkbox("Enable editing", value=True, key="output_editable")
             st.subheader(f"Generated Response" + (f" (Editable)" if editable else ""))
-            if st.session_state.get("last_specialist",'') != specialist:
+            if st.session_state.get("last_specialist", '') != specialist:
                 response, output = Facilitator.generate_product_doc(st.session_state.session_id, doc_choice=specialist)
 
             if "output" not in st.session_state or st.session_state.get("last_specialist") != specialist:
