@@ -24,7 +24,7 @@ class VideoAudioProcessor:
         """
         self.ffmpeg_path = ffmpeg_path
         self.input_path = input_path
-        self.output_path = output_path
+        self.output_path = os.path.join(output_path, 'total_audio.wav')
         self.interval_s = interval_s
         self.sample_rate = 16000
         self.channels = 1  # Mono audio, ultimately converted to by Gemini
@@ -32,6 +32,7 @@ class VideoAudioProcessor:
         if shutil.which(self.ffmpeg_path) is None:
             raise EnvironmentError(f"ffmpeg not found at path '{self.ffmpeg_path}'. Please install ffmpeg\nIf using macos use brew install ffmpeg.\nFor other platforms, please clone the repo")
         self.logger = logging.getLogger(self.__class__.__name__)
+
     def _run_ffmpeg_command(self, cmd: list) -> None:
         """
         Runs the given ffmpeg command using subprocess.
@@ -48,6 +49,7 @@ class VideoAudioProcessor:
         except Exception as e:
             self.logger.error(f"ffmpeg command execution failed: {e}")
             raise
+
     def _extract_audio(self) -> str:
         """
         Extracts the audio from the given video file and writes it to output_audio_path.

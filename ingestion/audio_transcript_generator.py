@@ -35,14 +35,13 @@ def generate_audio_segment_transcript(path_to_folder: str) -> list[dict]:
         logger.info("---GENERATE AUDIO SEGMENT TRANSCRIPT FOR INGESTION---")
         audio_dict = read_audio_segs_from_folder(path_to_folder)
         configuration = AssistantConfiguration()
-        logger.info(configuration.default_llm_model['provider'])
-        logger.info(configuration.default_llm_model['model_name'])
         chat_model = configuration.get_model(configuration.default_llm_model)
         req_output_list = llm_requests(chat_model, path_to_folder)
         return req_output_list
     except Exception as exc:
         logger.exception(f"Exception in creating transcription of frame segments: {exc}")
         raise
+
 
 def read_audio_segs_from_folder(path_to_folder) -> Dict[str, str]:
     directory = path_to_folder
@@ -55,6 +54,7 @@ def read_audio_segs_from_folder(path_to_folder) -> Dict[str, str]:
                 convert = base64.b64encode(audiofile.read()).decode('utf-8')
             audio_base64_dict[f"{entry.name}"] = f"{convert}"
     return audio_base64_dict
+
 
 def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
     """
@@ -75,6 +75,7 @@ def llm_requests(chat_model, path_to_folder: str) -> List[Dict[str, str]]:
         audio_base64 = audio_segments.get(audio_f_name, '')
         req_parts.append(audio_base64)
         req_output = get_llm_response(req_parts, chat_model)
+        # time.sleep(6)  # Sleep to avoid rate limiting issues with the LLM
         req_output_list.append(req_output)
         req_parts = [prompts.AUDIO_EXTRACT_PROMPT]
     return req_output_list
@@ -104,7 +105,7 @@ def get_llm_response(req_parts: List[str], chat_model: BaseChatModel) -> list[di
     ]
     # Generate the frame transcript
     audio_transcript = chat_model.invoke(messages)
-    time.sleep(6)
+    # time.sleep(6)
 
     # Parse it and return it
     parser = FrameJsonOutputParser()
