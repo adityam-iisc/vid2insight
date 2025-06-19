@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 import hashlib
 
 import streamlit as st
@@ -102,7 +106,7 @@ class Facilitator:
         return raw['chat_content'], raw['doc_content']
 
     @staticmethod
-    def generate_product_doc(session_id: str = 1, doc_choice: str = "Product Doc") -> str:
+    def generate_product_doc(session_id: str = 1, doc_choice: str = "Product Doc") -> tuple[str, str]:
         """
         Generate a product document based on the selected mode and video.
         """
@@ -116,7 +120,7 @@ class Facilitator:
             'intent': DocIntent.GENERATE_DOCS.value
         }
         raw = asyncio.run(app.ainvoke(payload, config))
-        return raw['answer']
+        return raw['chat_content'], raw['doc_content']
 
     @staticmethod
     def send_chat_docG(session_id: str = 1, results: str= '', chat_input: str = '') -> str:

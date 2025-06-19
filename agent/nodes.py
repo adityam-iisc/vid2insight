@@ -99,6 +99,9 @@ def format_response(state: AgentState, *, config: RunnableConfig) -> Dict[str, A
         ]
         logger.info("Formatting response with chat model")
         response = chat_model_with_structure.invoke(messages)
+        logger.info("Formatted response with chat model")
+        logger.info("Chat content: %s", response.chat_content)
+        logger.info("Doc content: %s", response.doc_content)
         return {
             'chat_content': response.chat_content,
             'doc_content': response.doc_content or "",
