@@ -103,7 +103,7 @@ class Facilitator:
             'intent': StudIntent.DOC_CHAT.value,
         }
         raw = asyncio.run(app.ainvoke(payload, config))
-        return raw['chat_content'], raw['doc_content']
+        return raw['chat_content'], json.loads(raw['doc_content'].replace('```json', '').replace('```', '')) if raw.get('doc_content') else {}
 
     @staticmethod
     def generate_product_doc(session_id: str = 1, doc_choice: str = "Product Doc") -> tuple[str, str]:
@@ -313,7 +313,7 @@ class MultiScreenApp:
                     st.session_state.mcq_answers = {}
                     st.session_state.mcq_evaluated = False
 
-                for i, q in enumerate(st.session_state.mcq_data["questions"]):
+                for i, q in enumerate(st.session_state.mcq_data.get("questions", [])):
                     st.markdown(f"### Q{i + 1}: {q['question']}")
 
                     # Topics covered with tag-style display
@@ -405,9 +405,7 @@ class MultiScreenApp:
         with col2:
             if st.button("Reset", key="tutor_reset"):
                 st.session_state.mcq_data = []
-                st.session_state.mcq_answers = {}
                 st.session_state.mcq_evaluated = False
-                st.session_state.summary_data = []
                 st.session_state.screen = 2
                 st.rerun()
 
