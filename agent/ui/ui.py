@@ -236,9 +236,15 @@ class MultiScreenApp:
             st.subheader(f"Generated Response" + (f" (Editable)" if editable else ""))
             if st.session_state.get("last_specialist", '') != specialist:
                 response, output = Facilitator.generate_product_doc(st.session_state.session_id, doc_choice=specialist)
+                print("-- Generated Response --")
+                print(response)
+                print("-- Generated Output --")
+                print(output)
 
             if "output" not in st.session_state or st.session_state.get("last_specialist") != specialist:
                 st.session_state.output = output
+                print("-- Setting output in session state --")
+                print(st.session_state.output)
                 st.session_state.last_specialist = specialist
             # st.session_state.output = st.text_area("Edit your response:", value=st.session_state.get("output", ""),
             #                                            height=400)
@@ -283,9 +289,11 @@ class MultiScreenApp:
         col1, col2, col3 = st.columns([1, 1, 1])
         with col1:
             if st.button("Submit"):
+                val = st.session_state.get("output", "")
                 st.session_state.output = (
                     f"Processed output for: {st.session_state.get('doc_choice')}"
-                )
+                ) + "\n\n" + val
+
                 st.rerun()
         with col2:
             st.download_button(
@@ -300,6 +308,7 @@ class MultiScreenApp:
                 st.session_state.screen = 2
                 st.session_state.last_specialist = ''
                 st.rerun()
+        print("-----End of Screen 3-----")
 
     def show_screen_4(self):
         st.title("Student Tutor")
