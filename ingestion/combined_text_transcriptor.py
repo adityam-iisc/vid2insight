@@ -159,9 +159,12 @@ def get_llm_response(req_parts, chat_model: BaseChatModel) -> list[dict]:
          req_parts[1])
         ]
     transcript = chat_model.invoke(messages)
-    parser = FrameJsonOutputParser()
-    parsed_output = parser.parse(transcript.content)
-    return parsed_output
+    # parser = FrameJsonOutputParser()
+    # parsed_output = parser.parse(transcript.content)
+
+    return {
+        "combined_transcript" : transcript.content
+    }
 
 
 # ============ Test Code ===============
