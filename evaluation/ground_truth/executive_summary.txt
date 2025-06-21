@@ -1,0 +1,6 @@
+
+This tutorial introduces LangChain, a powerful and flexible framework for developing applications based on large language models (LLMs). LangChain simplifies the integration of models, prompts, memory, and external APIs to build complex, dynamic workflows and intelligent agents.
+
+Core features include modular chaining, advanced prompt engineering, retrieval-augmented generation (RAG) for grounding responses in external knowledge, and support for multiple LLM providers including OpenAI and Hugging Face. The framework supports persistent conversation memory and batch processing for scalability.
+
+Through a Python notebook demonstration, the tutorial shows how LangChain enables easy and secure interaction with OpenAI’s API to create context-aware chatbots specializing in domains such as restaurant information. LangChain’s modular and extensible design, coupled with active community support and documentation, makes it a leading choice for developers building sophisticated AI-powered applications.

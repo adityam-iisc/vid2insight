@@ -1,0 +1,11 @@
+**LangChain Tutorial: Building LLM Applications**
+
+**Executive Summary:**
+This tutorial introduces LangChain, a framework for building applications using large language models (LLMs), covering its core purpose, models, prompts, chains, RAG, intelligent agents, and practical implementation with OpenAI.
+
+**Detailed Summary:**
+- LangChain simplifies LLM application development by integrating tools and components.
+- The tutorial covers working with models, prompts, and chains in LangChain.
+- It demonstrates implementing routing, memory, and retrieval-augmented generation (RAG).
+- The presentation explores building intelligent agents using LangChain.
+- Practical examples are shown using Python notebooks and OpenAI.
