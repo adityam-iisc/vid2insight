@@ -1,0 +1,50 @@
+
+
+**Q:** What is LangChain?
+**A:** LangChain is a framework designed to simplify building applications using large language models (LLMs). It provides abstractions for components such as models, prompts, chains, retrieval-augmented generation (RAG), and intelligent agents. LangChain helps developers integrate these parts easily to build powerful LLM applications. Comparable tools include Llama Index for RAG, and Lang Graph, Crew AI, and Microsoft offerings for agentic use cases.
+
+---
+
+**Q:** What are the key features of LangChain?
+**A:** The key features include abstractions for Models, Prompts, Chains, Retrieval-Augmented Generation (RAG), and Intelligent Agents. LangChain is built to simplify integrating various tools and components when developing applications powered by LLMs. Alternatives include Llama Index for retrieval-based tasks and Lang Graph, Crew AI, and Microsoft for agent-focused applications.
+
+---
+
+**Q:** How does LangChain support prompt engineering?
+**A:** LangChain supports prompt engineering by providing abstractions for Prompts, allowing flexible and dynamic prompt creation. While specific techniques are not detailed in the document, prompt management is one of the core abstractions alongside models, chains, RAG, and agents.
+
+---
+
+**Q:** What is Retrieval-Augmented Generation (RAG) in LangChain?
+**A:** RAG is one of LangChain’s abstractions designed to enhance applications by combining language model generation with external retrieval systems. This enables the model to generate more contextually relevant and factual outputs. Llama Index is mentioned as an alternative framework focused on RAG.
+
+---
+
+**Q:** Is LangChain compatible with different language models?
+**A:** LangChain provides abstractions for Models, implying support for various large language models (LLMs). However, the document does not explicitly detail compatibility limits or supported models.
+
+---
+
+**Q:** How does LangChain compare to other frameworks?
+**A:** The document notes Llama Index as an alternative for RAG use cases and Lang Graph, Crew AI, and Microsoft offerings for agentic use cases. While no detailed comparison is provided, these frameworks address similar functionalities in their respective domains.
+
+---
+
+**Q:** How do I use LangChain with OpenAI models?
+**A:** The document implies LangChain can be used with OpenAI models through its model abstractions but does not provide specific integration instructions or examples.
+
+---
+
+**Q:** What is the RunnablePassthrough feature in LangChain?
+**A:** The document does not provide information about the `RunnablePassthrough` feature. This functionality is not detailed in the provided content.
+
+---
+
+**Q:** How can I implement batch processing in LangChain?
+**A:** Specific implementation details are not provided, but batch processing is mentioned as helpful for serving many users or generating multiple candidate responses. It is noted to be heavily used in reeling, though details are limited.
+
+---
+
+**Q:** What is the LangChain Expression Language (LCEL)?
+**A:** The presentation includes a notebook demonstrating LCEL, where classes inheriting from `CRunnable` are chained together using the `|` operator. Beyond this example, detailed explanations of LCEL features are not provided.
+

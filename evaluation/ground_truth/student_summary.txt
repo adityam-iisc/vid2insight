@@ -1,0 +1,60 @@
+
+## Topics Covered
+
+* Introduction to LangChain
+* Working with Models and Prompts
+* LangChain Expression Language (LCEL)
+* Batch Processing
+* Retrieval-Augmented Generation (RAG) and Intelligent Agents
+
+## Summary
+
+This tutorial introduces LangChain, a modular framework designed to build applications leveraging large language models (LLMs). It explains LangChain’s core purpose and how it simplifies integrating tools and components when developing LLM-based applications. The tutorial covers interacting with models using prompts and chaining operations to create complex workflows.
+
+LangChain offers significant advantages by abstracting complexity, though all functionalities can be coded manually in Python. It also discusses alternative frameworks such as LlamaIndex for retrieval-augmented generation use cases and LangGraph, CrewAI, and Microsoft’s offerings for agentic applications.
+
+A practical demonstration shows LangChain usage with OpenAI models via a Python notebook. This includes securely loading API keys, creating chat completions with defined roles (system, user, assistant), sending queries to the model, and processing the responses effectively.
+
+The tutorial introduces batch processing as a technique for handling multiple simultaneous users or generating multiple candidate responses, which enhances scalability.
+
+LangChain Expression Language (LCEL) is explored through runnable class examples like `AddTen`, `MultiplyByTwo`, and `ConvertToString`, which can be chained together using the `|` operator to perform sequential operations. The role of `RunnablePassthrough` in passing inputs unchanged is also discussed.
+
+Finally, the tutorial touches on retrieval-augmented generation (RAG) to improve response accuracy by combining LLMs with external data retrieval, and the development of intelligent agents using LangChain’s framework.
+
+## Study Plan
+
+### Day 1: Introduction to LangChain and its Purpose
+
+* Understand the fundamental concepts and objectives of LangChain.
+* Take notes on how LangChain simplifies building LLM applications compared to writing code from scratch.
+* Research related frameworks and alternatives such as LlamaIndex and LangGraph.
+
+### Day 2: Working with Models and Prompts in LangChain
+
+* Explore examples of creating chat completions with OpenAI models using LangChain.
+* Practice loading API keys securely and managing conversations with system, user, and assistant roles.
+* Experiment with prompt design and analyze model outputs.
+
+### Day 3: LangChain Expression Language (LCEL)
+
+* Study runnable classes (`AddTen`, `MultiplyByTwo`, `ConvertToString`) and how to chain them using `|`.
+* Implement simple runnable classes and chain them to perform tasks.
+* Understand the utility of `RunnablePassthrough` in workflows.
+
+### Day 4: Batch Processing
+
+* Learn about batch processing benefits for multi-user handling and multi-response generation.
+* Investigate real-world use cases like reeling and consider implementation strategies in LangChain.
+
+### Day 5: Retrieval-Augmented Generation (RAG) and Intelligent Agents
+
+* Research the concept and purpose of RAG in LLM applications.
+* Review LangChain’s documentation and examples on RAG and intelligent agent construction.
+* Explore competing or complementary agent frameworks like LangGraph, CrewAI, and Microsoft’s solutions.
+
+## Prerequisites
+
+* Basic proficiency in Python programming.
+* Familiarity with large language models (LLMs) and their capabilities.
+* Understanding of APIs, environment variables, and secure key management.
+

@@ -1,0 +1,126 @@
+# LangChain: Building Applications with LLMs
+
+## Introduction
+
+This document provides a comprehensive guide to using LangChain, a versatile framework for building applications powered by large language models (LLMs). You will learn how to work with models, prompts, and chains, implement dynamic workflows, integrate retrieval-augmented generation (RAG), and build intelligent agents.
+
+## Table of Contents
+
+1. Introduction
+2. Overview
+3. Key Features
+4. Getting Started
+5. Usage Scenarios
+
+## Overview
+
+LangChain is a framework designed to simplify the integration of tools and components when building applications that leverage large language models (LLMs). It provides abstractions for working with models, prompts, and chains, enabling you to create sophisticated and dynamic workflows. LangChain is particularly useful for implementing retrieval-augmented generation (RAG) and building intelligent agents. While custom solutions can be crafted using Python, LangChain streamlines the process. Other platforms exist, such as Llama Index for RAG, and Lang Graph, Crew AI, and Microsoft's offerings for agentic use cases. These all help you write better prompts.
+
+## Key Features
+
+- **Model Abstraction:** Simplifies interaction with various LLMs.
+- **Prompt Management:** Facilitates the creation and management of effective prompts.
+- **Chains:** Enables the creation of sequential workflows by linking multiple components.
+- **Retrieval-Augmented Generation (RAG):** Integrates external knowledge sources into LLM applications.
+- **Intelligent Agents:** Supports the development of autonomous agents that can interact with the environment.
+- **LangChain Expression Language (LCEL):** Simplifies the creation of chains.
+- **Batch Processing:** Efficiently handle multiple requests or generate multiple candidates.
+
+## Getting Started
+
+### Prerequisites
+
+- Python environment
+- OpenAI API key
+- `dotenv` library
+
+### Installation or Setup
+
+1.  Install the necessary libraries:
+
+    ```bash
+    pip install python-dotenv openai langchain
+    ```
+2.  Create a `.env` file in your project directory.
+3.  Add your OpenAI API key to the `.env` file:
+
+    ```
+    OPENAI_API_KEY=YOUR_API_KEY
+    ```
+
+4.  Load environment variables in your Python script:
+
+    ```python
+    from dotenv import load_dotenv
+    import os
+
+    load_dotenv()
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    ```
+
+### Verification
+
+1.  Verify that the API key is loaded correctly (ensure you mask the key when printing for security):
+
+    ```python
+    print(os.getcwd())
+    print("OPENAI_API_KEY:", openai_api_key[:5] + "*****") # Mask the API key
+    ```
+
+## Usage Scenarios
+
+### Basic Usage
+
+1.  **Chat Completion with OpenAI:**
+
+    ```python
+    from openai import OpenAI
+    import os
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    completion = client.chat.completions.create(
+      model="gpt-3.5-turbo",
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant specializing in providing information about the BellaVista Italian Restaurant."},
+        {"role": "user", "content": "What's on the menu, and are there any vegan options?"}
+      ]
+    )
+
+    print(completion.choices[0].message.content)
+    ```
+
+2.  **LangChain Expression Language (LCEL) Example:**
+
+    ```python
+    from langchain_core.runnables import Runnable, chain
+    from langchain_core.runnables import RunnablePassthrough
+
+    class AddTen(Runnable):
+        def invoke(self, data):
+            return data + 10
+
+    class MultiplyByTwo(Runnable):
+        def invoke(self, data):
+            return data * 2
+
+    class ConvertToString(Runnable):
+        def invoke(self, data):
+            return "Result: " + str(data)
+
+    add_ten = AddTen()
+    multiply_by_two = MultiplyByTwo()
+    convert_to_string = ConvertToString()
+
+    my_chain = add_ten | multiply_by_two | convert_to_string
+
+    result = my_chain.invoke(10)
+    print(result)
+    ```
+
+### Advanced Usage
+
+- **Batch Processing:**  Use LangChain for processing multiple requests simultaneously, useful for serving many users or generating multiple candidate responses.
+- **RunnablePassthrough:** Pass the input to the next runnable without modification using `RunnablePassthrough`.
