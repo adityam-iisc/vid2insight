@@ -1,0 +1,26 @@
+This presentation is a tutorial on LangChain, a versatile framework designed for building applications that leverage large language models (LLMs). The presenter begins by explaining that these systems are essentially abstractions layered on top of other abstractions.
+The tutorial covers the core purpose of LangChain, demonstrating how to work with models, prompts, and chains, as well as how to implement routing and memory for dynamic workflows. It also includes retrieval-augmented generation (RAG), building intelligent agents, and highlights the advantages of using LangChain.
+The learning objectives include enabling users to:
+Understand LangChain's core purpose,
+Work effectively with models, prompts, and chains,
+Implement routing and memory to handle dynamic workflows,
+Integrate retrieval-augmented generation (RAG), and
+Build intelligent agents using LangChain.
+LangChain simplifies the integration of various tools and components required to build applications using LLMs.
+The presenter emphasizes that although you can write much of this code yourself in Python, LangChain stands out as the most practical and competitive framework compared to others like Llama Index, which is somewhat similar for RAG use cases.
+For agentic use cases, alternatives include LangGraph, Crew AI, and Microsoft's offering.
+All these platforms focus on helping users craft better prompts, as prompt quality is critical for success in RAG and agent workflows.
+The presenter will focus mainly on the core design of LangChain and on building intelligent agents.
+Next, the presentation transitions to a Python notebook demonstrating LangChain usage with OpenAI.
+The notebook loads essential libraries such as dotenv and os to access environment variables, including the OpenAI API key retrieved securely from a .env file.
+It prints the current working directory and a masked version of the API key to ensure security.
+Using the OpenAI Python client, the notebook creates a chat completion with a predefined conversation:
+A system message sets the assistant's role as a helpful entity specialized in providing information about BellaVista Italian Restaurant.
+The user asks about the menu and vegan options.
+The assistant responds with relevant information.
+The presenter notes that this approach of defining roles and messages is part of OpenAI's API design.
+The notebook outputs the raw API response, including token usage and response content.
+Specifically, the assistant confirms that BellaVista offers vegan menu options.
+The presenter explains that inspecting the choices and message fields in the response provides the content to display to end users.
+This pipeline for querying language models is common regardless of the platform used.
+However, LangChain offers additional benefits and simplifies many of these steps, making development easier and more efficient.

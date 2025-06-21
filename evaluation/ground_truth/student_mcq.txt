@@ -1,0 +1,121 @@
+
+
+**Question 1:** What is LangChain described as in the presentation?
+a) A complex system for language translation.
+b) A versatile framework for building applications that leverage large language models (LLMs).
+c) A tool for creating simple text prompts.
+d) A database for storing language models.
+
+**Correct answer:** b) A versatile framework for building applications that leverage large language models (LLMs).
+**Explanation:** The presentation describes LangChain as a flexible framework designed to simplify building LLM-powered applications.
+
+---
+
+**Question 2:** According to the presenter, what is the core purpose of LangChain?
+a) To replace Python functions.
+b) To simplify the integration of tools and components when building applications that use large language models (LLMs).
+c) To complicate the process of working with language models.
+d) To only work with OpenAI models.
+
+**Correct answer:** b) To simplify the integration of tools and components when building applications that use large language models (LLMs).
+
+---
+
+**Question 3:** Which of the following is mentioned as an alternative or related framework to LangChain?
+a) TensorFlow
+b) PyTorch
+c) LlamaIndex
+d) scikit-learn
+
+**Correct answer:** c) LlamaIndex
+
+---
+
+**Question 4:** What does the Python notebook begin with?
+a) Defining new language models.
+b) Loading necessary libraries such as `load_dotenv` from `dotenv` and `os`.
+c) Training a custom AI model.
+d) Creating a user interface.
+
+**Correct answer:** b) Loading necessary libraries such as `load_dotenv` from `dotenv` and `os`.
+**Explanation:** The notebook starts by importing libraries to manage environment variables and system operations.
+
+---
+
+**Question 5:** How is the OpenAI API key retrieved in the Python notebook?
+a) It is hardcoded directly into the script.
+b) It is randomly generated.
+c) It is retrieved from a `.env` file using `os.getenv("OPENAI_API_KEY")`.
+d) It is not used in the notebook.
+
+**Correct answer:** c) It is retrieved from a `.env` file using `os.getenv("OPENAI_API_KEY")`.
+
+---
+
+**Question 6:** In the chat completion example, what role is assigned to provide context about BellaVista Italian Restaurant?
+a) User
+b) Assistant
+c) System
+d) Model
+
+**Correct answer:** c) System
+
+---
+
+**Question 7:** What does the user query in the chat completion example?
+a) The weather forecast.
+b) Information about the menu and vegan options at BellaVista Italian Restaurant.
+c) Stock prices.
+d) Directions to the restaurant.
+
+**Correct answer:** b) Information about the menu and vegan options at BellaVista Italian Restaurant.
+
+---
+
+**Question 8:** What information does the API response confirm about BellaVista?
+a) It is closed.
+b) It does not offer vegan options.
+c) It offers vegan options.
+d) It only serves breakfast.
+
+**Correct answer:** c) It offers vegan options.
+
+---
+
+**Question 9:** What is mentioned as being heavily used in reeling?
+a) Single processing
+b) Batch processing
+c) Real-time processing
+d) Parallel processing
+
+**Correct answer:** b) Batch processing
+
+---
+
+**Question 10:** From what class do `AddTen`, `MultiplyByTwo`, and `ConvertToString` inherit?
+a) `Runnable`
+b) `BaseModel`
+c) `CRunnable`
+d) `Chain`
+
+**Correct answer:** c) `CRunnable`
+
+---
+
+**Question 11:** What does the `AddTen` class do?
+a) Multiplies the input data by 10.
+b) Adds 10 to the input data.
+c) Converts the input data to a string.
+d) Divides the input data by 10.
+
+**Correct answer:** b) Adds 10 to the input data.
+
+---
+
+**Question 12:** What is the purpose of `RunnablePassthrough`?
+a) To modify the input before passing it to the next runnable.
+b) To pass the input to the next runnable without modification.
+c) To stop the chain of runnables.
+d) To convert the input to a different data type.
+
+**Correct answer:** b) To pass the input to the next runnable without modification.
