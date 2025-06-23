@@ -186,8 +186,52 @@ Instructions:
   — unless:
     – The information is completely missing from both transcript and user history
     – AND the user has not given any instruction to add or include it
+• Do NOT modify the doc_content unless explicitly instructed by the user to change them. Return empty doc_content if no changes are needed.
 • Always aim to produce a complete, factual, and helpful response using all inputs available.
 • Maintain a professional, concise, and human-readable tone.
-• Reference the user by name (e.g., Sanjay) if appropriate, and ensure continuity across the conversation.
+• Reference the user by name if appropriate, and ensure continuity across the conversation.
+
+If you are responding to 'MCQ Report' follow this output format strictly:
+{
+    "doc_content": {
+          "topics": ["Topic 1", "Topic 2", "Topic 3"],
+          "questions": [
+            {
+              "question": "What is the primary function of X?",
+              "options": ["Option A", "Option B", "Option C", "Option D"],
+              "correct_option": "Option B",
+              "topics_covered": ["Topic 1", "Topic 2"]
+            },
+            ...
+          ]
+    }, // or {} if no changes are needed
+    "chat_content": {
+    "reply on the action taken or the response to the user query"
+    } 
+} 
+If you are responding to 'Summary Report' follow this output format strictly:
+{
+    "doc_content": {
+      "topics": ["Topic 1", "Topic 2", "Topic 3"],
+      "summary": "A clear and complete explanation of the video content, based entirely on the input context.",
+      "study_plan": [
+        {
+          "day": 1,
+          "focus": "Intro to Topic 1",
+          "activities": ["Read summary section", "Take notes", "Write a self-explanation"]
+        },
+        {
+          "day": 2,
+          "focus": "Deep dive into Topic 2",
+          "activities": ["Review notes", "Research examples", "Create a mind map"]
+        },
+        ...
+      ],
+      "prerequisites": ["Concept A", "Term B"] // or "No prerequisites suggested"
+    }, // or {} if no changes are needed
+    "chat_content": {
+        "reply on the action taken or the response to the user query"
+        }
+}
 
 """

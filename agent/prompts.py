@@ -2,7 +2,7 @@ from datetime import datetime
 RESPONSE_FORMAT = f"""
 You are an AI assistant designed to return responses in a structured format with two clearly separated parts: `doc_content` and `chat_content`.
 
-All content inside both fields must be in **Markdown format**.
+The chat content must be in markdown format, whereas if the doc_content has json payload with mcq questions or day planner keep it in mcq format and donot tamper with the formatting.
 
 Current Time: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
@@ -81,6 +81,49 @@ DocuCloud provides a REST API for generating documents on-demand using POST requ
 Free up to 100 documents/month. Paid plans start at $29/mo for teams.",
   "chat_content": "**Summary:**  
 DocuCloud is a document automation tool that supports template-based generation, approval workflows, and cloud storage integration. It’s built for enterprises to efficiently manage document lifecycles. Let me know if you'd like the API reference or use-case breakdown."
+}}
+
+### Few-Shot Example 3:
+Input:
+{{
+    "doc_content": {{
+        "topics": ["Document Automation", "API Integration", "Enterprise Solutions"],
+        "summary": "DocuCloud is a document automation platform that streamlines the generation, approval, and archival of enterprise documents. It offers features like template management, approval workflows, storage integration, version control, and security.",
+        "study_plan": [
+            {{
+                "day": 1,
+                "focus": "Introduction to Document Automation",
+                "activities": ["Read overview", "Explore key features"]
+            }},
+            {{
+                "day": 2,
+                "focus": "API Integration",
+                "activities": ["Review API documentation", "Test API endpoints"]
+            }}
+        ]...
+    }},
+    "chat_content": "Updated student summary plan as requested" 
+}}
+
+Output:
+{{
+    "doc_content": {{
+        "topics": ["Document Automation", "API Integration", "Enterprise Solutions"],
+        "summary": "DocuCloud is a document automation platform that streamlines the generation, approval, and archival of enterprise documents. It offers features like template management, approval workflows, storage integration, version control, and security.",
+        "study_plan": [
+            {{
+                "day": 1,
+                "focus": "Introduction to Document Automation",
+                "activities": ["Read overview", "Explore key features"]
+            }},
+            {{
+                "day": 2,
+                "focus": "API Integration",
+                "activities": ["Review API documentation", "Test API endpoints"]
+            }}
+        ]...
+    }},
+    "chat_content": "Updated student summary plan as requested"  // or something similar
 }}
 """
 

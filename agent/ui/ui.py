@@ -87,7 +87,7 @@ class Facilitator:
         return json.loads(raw['answer'].replace('```json','').replace('```',''))
 
     @staticmethod
-    def send_chat_studentG(session_id: str, results: list[dict], chat_input: str):
+    def send_chat_studentG(session_id: str, results: list[dict], chat_input: str, invoked_by: str):
         """
         Send the MCQ evaluation results (correct/incorrect per question) back to the app.
         """
@@ -95,7 +95,7 @@ class Facilitator:
             st.warning("Please enter a message to send.")
             return '', ''
         config = {"configurable": {"thread_id": session_id, 'agent_choice': AgentType.student_agent.value}}
-        messages = f"Answer my query: {chat_input}" + (f"And some additional context if necessary: {json.dumps(results)}" if results else '')
+        messages = f"You are responding to a query related to {invoked_by}: {chat_input}" + (f"And some additional context if necessary: {json.dumps(results)}" if results else '')
         payload = {
             "messages": [{"role": "human", "content": messages}],
             'expert_preference': AgentType.student_agent.value,
@@ -317,7 +317,7 @@ class MultiScreenApp:
         col_left, col_right = st.columns([4, 2])
         with col_left:
             if tutor_mode == "Generate MCQ":
-                if "mcq_data" not in st.session_state:
+                if not st.session_state.get("mcq_data"):
                     st.session_state.mcq_data = Facilitator.generate_mcqs(st.session_state.session_id)
                     st.session_state.mcq_answers = {}
                     st.session_state.mcq_evaluated = False
@@ -389,7 +389,7 @@ class MultiScreenApp:
             chat_input = st.text_area("Message", key="tutor_chat_input", placeholder=st.session_state.get("chat_input", "Type your message here..."))
             additional_info = st.session_state.get('mcq_eval', []) if tutor_mode == "Generate MCQ" else json.dumps(st.session_state.get('summary_data', {}))
             if st.button("Send", key="tutor_chat_send"):
-                response, mcq_questions = Facilitator.send_chat_studentG(session_id=st.session_state.session_id, results= additional_info, chat_input=chat_input)
+                response, mcq_questions = Facilitator.send_chat_studentG(session_id=st.session_state.session_id, results= additional_info, chat_input=chat_input, invoked_by= 'My MCQ' if (tutor_mode == 'Summary') else 'My Study Plan')
                 if st.session_state.get("tutor_chat_history", []):
                     st.session_state.tutor_chat_history.extend([
                         {"role": "user", "content": chat_input},
@@ -404,7 +404,11 @@ class MultiScreenApp:
                     st.session_state.mcq_data = mcq_questions
                     st.session_state.mcq_answers = {}
                     st.session_state.mcq_evaluated = False
-                st.session_state.chat_input = ""  # clear input
+                    st.rerun()
+                elif tutor_mode == "Summary":
+                    st.session_state.summary_data = mcq_questions['doc_content'] if 'doc_content' in mcq_questions.keys() else mcq_questions
+                    st.rerun()
+                # st.session_state.chat_input = ""  # clear input
             for turn in st.session_state.get('tutor_chat_history', []):
                 st.chat_message(turn["role"]).write(turn["content"])
         col1, col2 = st.columns([1, 1])
